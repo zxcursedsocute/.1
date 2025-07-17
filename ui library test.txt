@@ -46,7 +46,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "UI"
-	self.UI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	self.UI.Parent = CoreGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
