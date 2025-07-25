@@ -43,9 +43,8 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Windowscd = false
 	self.userinfo = true
 
-
 	self.UI = Instance.new("ScreenGui")
-	self.UI.Name = "UI"
+	self.UI.Name = "RobloxGui"
 	self.UI.Parent = CoreGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -906,7 +905,7 @@ function Library:AddTab(name,icon)
 	Frame_3.Size = UDim2.new(0, 171, 0, 35)
 	Frame_3.Text = ''
 	table.insert(tab.Tab, Frame_3)
-	
+
 	self.tabpos += 40
 
 	Frame_3.MouseEnter:Connect(function()
@@ -1002,7 +1001,7 @@ function Library:AddTab(name,icon)
 	if #self.mainTabs == 1 then
 		self:SelectTab(tab, Frame_3)
 	end
-	
+
 	function tab:CalcScroll()
 		self.Tab[5].CanvasSize = UDim2.new(0, 0, 0, self.pos)
 	end
@@ -1215,40 +1214,9 @@ function Library:AddTab(name,icon)
 		Toggle.Size = UDim2.new(0, 360, 0, 45)
 		Toggle.Text = ''
 
-		local toggleData = {
-			value = toggle.Default,
-			callback = toggle.Callback
-		}
-		table.insert(self.Library.AllToggles, toggleData)
-
-		Toggle.MouseButton1Click:Connect(function()
-			if toggle.Default then
-				toggle.Default = false
-				Library:Tween(Frame, {Position = UDim2.new(0.07, 0, 0.12, 0)}, 0.2)
-				Library:Tween(Frame2, {Size = UDim2.new(0, 0, 0, 19),BackgroundTransparency = 1}, 0.2)
-				toggleData.value = false
-				table.insert(self.Library.AllToggles, toggleData)
-			else
-				toggleData.value = true
-				table.insert(self.Library.AllToggles, toggleData)
-				toggle.Default = true
-				Library:Tween(Frame, {Position = UDim2.new(0.6, 0, 0.12, 0)}, 0.2)
-				Library:Tween(Frame2, {Size = UDim2.new(0, 47, 0, 19),BackgroundTransparency = 0}, 0.2)
-			end
-			if toggle.Callback then
-				toggle.Callback(toggle.Default)
-			end
-		end)
-
-
-
 		UICorner.Parent = Toggle
 
-		local namepos = 5
-
-		if config.Description == '' then
-			namepos = 12.5
-		end
+		local namepos = config.Description and config.Description ~= '' and 5 or 12.5
 
 		name.Name = "name"
 		name.Parent = Toggle
@@ -1306,12 +1274,53 @@ function Library:AddTab(name,icon)
 		Frame2.ZIndex = -1
 
 		UICorner2.Parent = Frame2
-
 		UICorner_3.Parent = Frame
+
+		local toggleController = {
+			Value = toggle.Default,
+			UpdateVisuals = function(self, state)
+				if state then
+					Library:Tween(Frame, {Position = UDim2.new(0.6, 0, 0.12, 0)}, 0.2)
+					Library:Tween(Frame2, {Size = UDim2.new(0, 47, 0, 19), BackgroundTransparency = 0}, 0.2)
+				else
+					Library:Tween(Frame, {Position = UDim2.new(0.07, 0, 0.12, 0)}, 0.2)
+					Library:Tween(Frame2, {Size = UDim2.new(0, 0, 0, 19), BackgroundTransparency = 1}, 0.2)
+				end
+			end,
+			SetState = function(self, state)
+				if state == self.Value then return end
+				self.Value = state
+				self:UpdateVisuals(state)
+
+				if toggle.Callback then
+					toggle.Callback(state)
+				end
+			end,
+			GetState = function(self)
+				return self.Value
+			end,
+			Toggle = function(self)
+				self:SetState(not self.Value)
+			end
+		}
+
+		toggleController:UpdateVisuals(toggleController.Value)
+
+		local toggleData = {
+			value = toggleController.Value,
+			controller = toggleController
+		}
+		table.insert(self.Library.AllToggles, toggleData)
+
+		Toggle.MouseButton1Click:Connect(function()
+			toggleController:Toggle()
+		end)
 
 		table.insert(self.Elements, Toggle)
 		self.pos += 50
 		tab:CalcScroll()
+
+		return toggleController
 	end
 
 	function tab:AddKeybind(config)
@@ -1344,7 +1353,7 @@ function Library:AddTab(name,icon)
 		keybind.Text = ''
 
 		UICorner.Parent = keybind
-		
+
 		local namepos = 5
 
 		if config.Description == '' then
@@ -1439,6 +1448,7 @@ function Library:AddTab(name,icon)
 		local Input = {
 			Name = config.Name,
 			Description = config.Description,
+			SaveUserText = config.SaveUserText or false,
 			Default = config.Default or "Default",
 			Callback = config.Callback
 		}
@@ -1471,7 +1481,7 @@ function Library:AddTab(name,icon)
 		if config.Description == '' then
 			namepos = 12.5
 		end
-		
+
 		name.Name = "name"
 		name.Parent = input
 		name.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1524,7 +1534,9 @@ function Library:AddTab(name,icon)
 
 		TextBox.FocusLost:Connect(function()
 			wait(0.01)
-			TextBox.Text = Input.Default
+			if not Input.SaveUserText then
+				TextBox.Text = Input.Default
+			end
 		end)
 
 		table.insert(self.Elements, input)
@@ -1569,7 +1581,7 @@ function Library:AddTab(name,icon)
 		slider.Text = ''
 
 		UICorner.Parent = slider
-		
+
 		local namepos = 5
 
 		if config.Description == '' then
@@ -1600,7 +1612,7 @@ function Library:AddTab(name,icon)
 		subtext.Size = UDim2.new(0, 193, 0, 14)
 		subtext.Font = Enum.Font.FredokaOne
 		subtext.Text = Slider.Description
-		subtext.TextColor3 = self.Theme.TextColor
+		subtext.TextColor3 = tab.Theme.SubTtitleTextColor
 		subtext.TextSize = 14.000
 		subtext.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -1691,8 +1703,6 @@ function Library:AddTab(name,icon)
 		tab:CalcScroll()
 	end
 
-
-
 	function tab:AddColorPicker(config)
 		local colorPicker = {
 			Name = config.Name,
@@ -1709,7 +1719,6 @@ function Library:AddTab(name,icon)
 		local subtext = Instance.new("TextLabel")
 		table.insert(tab.Textsubtitle, subtext)
 		local colorButton = Instance.new("TextButton")
-		table.insert(tab.actionBakcColor, colorButton)
 		local UICorner_2 = Instance.new("UICorner")
 
 		ColorPick.Name = "ColorPick"
@@ -1770,13 +1779,11 @@ function Library:AddTab(name,icon)
 		UICorner_2.Parent = colorButton
 		UICorner_2.CornerRadius = UDim.new(0, 5)
 
-		-- Переменные для управления цветом
 		local currentColor = colorPicker.Default
 		local colorPaletteFrame = nil
 		local hue, saturation, value = currentColor:ToHSV()
-		local updateConnection = nil  -- Для отслеживания позиции
+		local updateConnection = nil
 
-		-- Функция установки цвета
 		local function setColor(color)
 			if color == nil then return end
 			currentColor = color
@@ -1787,10 +1794,8 @@ function Library:AddTab(name,icon)
 			end
 		end
 
-		-- Инициализация цвета
 		setColor(colorPicker.Default)
 
-		-- Функция обновления позиции палитры
 		local function updatePalettePosition()
 			if not colorPaletteFrame or not colorPaletteFrame.Visible then return end
 			if not colorButton or not colorButton.AbsolutePosition then return end
@@ -1801,7 +1806,6 @@ function Library:AddTab(name,icon)
 			)
 		end
 
-		-- Функция показа/скрытия палитры
 		local function togglePalette()
 			if colorPaletteFrame and colorPaletteFrame.Visible then
 				colorPaletteFrame.Visible = false
@@ -1811,7 +1815,6 @@ function Library:AddTab(name,icon)
 				end
 			else
 				if not colorPaletteFrame then
-					-- Создаем палитру при первом открытии
 					colorPaletteFrame = Instance.new("Frame")
 					colorPaletteFrame.Name = "ColorPalette"
 					colorPaletteFrame.BackgroundColor3 = tab.Theme.DropDownColor or Color3.fromRGB(30, 30, 30)
@@ -1826,7 +1829,6 @@ function Library:AddTab(name,icon)
 					UICorner_3.CornerRadius = UDim.new(0, 6)
 					UICorner_3.Parent = colorPaletteFrame
 
-					-- Основной цветовой градиент (Hue)
 					local hueGradient = Instance.new("Frame")
 					hueGradient.Name = "HueGradient"
 					hueGradient.Size = UDim2.new(0, 130, 0, 15)
@@ -1850,7 +1852,6 @@ function Library:AddTab(name,icon)
 					}
 					hueUIGradient.Parent = hueGradient
 
-					-- Ползунок для Hue с указателем
 					local hueSlider = Instance.new("Frame")
 					hueSlider.Name = "HueSlider"
 					hueSlider.Size = UDim2.new(0, 4, 0, 17)
@@ -1859,7 +1860,6 @@ function Library:AddTab(name,icon)
 					hueSlider.ZIndex = 52
 					hueSlider.Parent = hueGradient
 
-					-- Градиент насыщенности и яркости
 					local svGradient = Instance.new("Frame")
 					svGradient.Name = "SVGradient"
 					svGradient.Size = UDim2.new(0, 130, 0, 80)
@@ -1872,7 +1872,6 @@ function Library:AddTab(name,icon)
 					svUICorner.CornerRadius = UDim.new(0, 4)
 					svUICorner.Parent = svGradient
 
-					-- Градиент насыщенности (горизонтальный) - ИСПРАВЛЕН
 					local saturationGradient = Instance.new("UIGradient")
 					saturationGradient.Rotation = 0
 					saturationGradient.Transparency = NumberSequence.new{
@@ -1882,17 +1881,15 @@ function Library:AddTab(name,icon)
 					saturationGradient.Color = ColorSequence.new(Color3.new(1, 1, 1))
 					saturationGradient.Parent = svGradient
 
-					-- Градиент яркости (вертикальный) - ИСПРАВЛЕН
 					local valueGradient = Instance.new("UIGradient")
 					valueGradient.Rotation = 90
 					valueGradient.Transparency = NumberSequence.new{
-						NumberSequenceKeypoint.new(0, 1),  -- Верх: прозрачный
-						NumberSequenceKeypoint.new(1, 0)   -- Низ: непрозрачный
+						NumberSequenceKeypoint.new(0, 1),
+						NumberSequenceKeypoint.new(1, 0)
 					}
 					valueGradient.Color = ColorSequence.new(Color3.new(0, 0, 0))
 					valueGradient.Parent = svGradient
 
-					-- Селектор для SV градиента с указателем
 					local svSelector = Instance.new("Frame")
 					svSelector.Name = "SVSelector"
 					svSelector.Size = UDim2.new(0, 8, 0, 8)
@@ -1908,7 +1905,6 @@ function Library:AddTab(name,icon)
 					selectorUICorner.CornerRadius = UDim.new(1, 0)
 					selectorUICorner.Parent = svSelector
 
-					-- HEX-поле для ввода
 					local hexInput = Instance.new("TextBox")
 					hexInput.Name = "HexInput"
 					hexInput.PlaceholderText = "HEX (#RRGGBB)"
@@ -1926,14 +1922,11 @@ function Library:AddTab(name,icon)
 					UICorner_4.CornerRadius = UDim.new(0, 4)
 					UICorner_4.Parent = hexInput
 
-					-- Функция обновления визуальных элементов
 					local function updateVisuals()
-						-- Обновление SV градиента
 						if svGradient then
 							svGradient.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
 						end
 
-						-- Обновление позиций селекторов
 						if hueSlider then
 							hueSlider.Position = UDim2.new(hue, -2, 0, -1)
 						end
@@ -1941,14 +1934,12 @@ function Library:AddTab(name,icon)
 							svSelector.Position = UDim2.new(saturation, 0, 1 - value, 0)
 						end
 
-						-- Обновление HEX-поля
 						if hexInput then
 							local r, g, b = math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255)
 							hexInput.Text = string.format("#%02X%02X%02X", r, g, b)
 						end
 					end
 
-					-- Обработчики взаимодействия
 					local function onHueInput(input)
 						if input.UserInputType == Enum.UserInputType.MouseButton1 then
 							local x = (input.Position.X - hueGradient.AbsolutePosition.X) / hueGradient.AbsoluteSize.X
@@ -1987,7 +1978,6 @@ function Library:AddTab(name,icon)
 						end)
 					end
 
-					-- Обработчик HEX-ввода
 					local function applyCustomColor()
 						local hex = hexInput.Text:gsub("#", "")
 						if #hex == 6 then
@@ -2012,11 +2002,9 @@ function Library:AddTab(name,icon)
 						end)
 					end
 
-					-- Инициализация
 					if updateVisuals then updateVisuals() end
 				end
 
-				-- Создаем соединение для обновления позиции
 				if updateConnection then
 					updateConnection:Disconnect()
 				end
@@ -2026,7 +2014,6 @@ function Library:AddTab(name,icon)
 					end
 				end)
 
-				-- Установка начальной позиции
 				updatePalettePosition()
 				colorPaletteFrame.Visible = true
 			end
@@ -2034,7 +2021,6 @@ function Library:AddTab(name,icon)
 
 		colorButton.MouseButton1Click:Connect(togglePalette)
 
-		-- Закрытие палитры при клике вне ее
 		local closeConnection
 		closeConnection = UserInputService.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -2063,7 +2049,6 @@ function Library:AddTab(name,icon)
 		self.pos += 50
 		tab:CalcScroll()
 
-		-- Возвращаем объект для управления цветом
 		local colorPickerObj = {}
 		function colorPickerObj:SetColor(color)
 			setColor(color)
@@ -2078,8 +2063,6 @@ function Library:AddTab(name,icon)
 
 		return colorPickerObj
 	end
-
-
 
 	function tab:AddDropdown(config)
 		local dropdown = {
@@ -2121,7 +2104,7 @@ function Library:AddTab(name,icon)
 		Dropdown.Text = ''
 
 		UICorner.Parent = Dropdown
-		
+
 		local namepos = 5
 
 		if config.Description == '' then
@@ -2367,7 +2350,7 @@ function Library:AddTab(name,icon)
 		self.pos += 50
 		tab:CalcScroll()
 	end
-	
+
 	self.ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, self.tabpos + 2)
 
 	return tab
@@ -2461,10 +2444,8 @@ function Library:ColumnWindow()
 			self.Header.BackgroundTransparency = 1
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self.Frame_2.Visible = false
-			--self.Frame.Size = UDim2.new(0, 375,0, 1)
 			self:Tween(self.ImageLabel, {Size = UDim2.new(0, 395,0, 480)}, 1)
 			self:Tween(self.Frame, {Size = UDim2.new(0, 375,0, 1)}, 1)
-			--self.ImageLabel.Size = UDim2.new(0, 395,0, 480)
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.WindowUser.Visible = false
@@ -2503,20 +2484,6 @@ function Library:ColumnWindow()
 			self.Tabs.Visible = true
 			self.Sections.Visible = true
 			self.Windowscd = false
-	--[[for i,v in pairs(self.mainTabs) do
-		print(v.Elements)
-		for i2,v2 in pairs(v.Elements) do
-			if v2.Name ~= "TextLabel"  then
-				v2.Size = UDim2.new(0, 550,0, 45) 
-				for i3,v3 in pairs(v2:GetChildren()) do
-					print(v3)
-					if v3.ClassName == "TextBox" or v3.ClassName == "Frame" or v3.ClassName == "TextButton" then
-						v3.Position = UDim2.new(0.7, 0,0.156, 0)
-					end
-				end
-			end
-		end
-	end--]]
 		else
 			self.Header.Size = UDim2.new(0, 590 - 24, 0, 40)
 			self.Header.BackgroundTransparency = 1
@@ -2526,8 +2493,6 @@ function Library:ColumnWindow()
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.Frame_2.Visible = true
-			--self.Frame.Size = UDim2.new(0, 566,0, 1)
-			--self.ImageLabel.Size = UDim2.new(0, 590,0, 480)
 			self.Sections.Size = UDim2.new(0, 380,0, 414)
 			self.Sections.Position = UDim2.new(0.336, 0,0.11, 0)
 			self.Frame_7.Size = UDim2.new(0, 366,0, 379)
@@ -2565,37 +2530,6 @@ function Library:ColumnWindow()
 			end
 		end
 		self.Windowscd = false
-
-	--[[if self.Frame.Transparency == 1 then
-		self.Header.BackgroundTransparency = self.Theme.BackGroundTran
-		self.Tabs.Visible = false
-		self.Sections.Visible = false
-		self.TextLabel.Visible = false
-		self.TextLabel_2.Visible = false
-		self.Frame.Transparency = 1
-		self.ImageButton.Position = UDim2.new(0.08, 0, -26, 0)
-		self.ImageButton_2.Position = UDim2.new(0.02, 0, -21, 0)
-		self.close.Position = UDim2.new(0.13, 0, -28, 0)
-		self:Tween(self.ImageLabel,{Size = UDim2.new(0, 100, 0, 40)},1)
-		self:Tween(self.Header,{Size = UDim2.new(0, 100, 0, 40)},1)
-		wait(1)
-		self.ImageLabel.ImageTransparency = 1
-	else
-		self.Header.BackgroundTransparency = self.Theme.BackGroundTran
-		self.Tabs.Visible = true
-		self.Sections.Visible = true
-		self.TextLabel.Visible = true
-		self.TextLabel_2.Visible = true
-		self.Frame.Transparency = 0
-		self.ImageButton.Position = UDim2.new(0.08, 0, -26, 0)
-		self.ImageButton_2.Position = UDim2.new(0.02, 0, -21, 0)
-		self.close.Position = UDim2.new(0.13, 0, -28, 0)
-		self:Tween(self.ImageLabel,{Size = UDim2.new(0, 100, 0, 40)},1)
-		self:Tween(self.Header,{Size = UDim2.new(0, 100, 0, 40)},1)
-		wait(1)
-		self.ImageLabel.ImageTransparency = 1
-		
-	end--]]
 	end
 end
 
@@ -2633,7 +2567,6 @@ end
 
 function Library:ShowDestroyQ()
 	if self.Destroy_gui.Visible then
-		--self.Destroy_gui.Size.X = self.ImageLabel.Size.X.Offset - 20
 		self.dTextLabel.Visible = false
 		self.dTextButton.Visible = false
 		self.dTextLabel_2.Visible = false
@@ -2677,13 +2610,9 @@ end
 function Library:Close()
 	local size = self.ImageLabel.Size
 	if self.ImageLabel.Visible then
-		--self:Tween(self.UI, {Transparency = 1}, 1)
-		--wait(1)
 		self:Tween(self.ImageLabel,{Size = UDim2.new(0, 40, 0, 0)},0)
 		self.ImageLabel.Visible = false
 	else
-		--self:Tween(self.UI, {Transparency = 0}, 1)
-		--wait(1)
 		if self.Sections.Visible == false then
 			self:Tween(self.ImageLabel,{Size = UDim2.new(0, 590, 0, 40)},0)
 		elseif self.Sections.Size == UDim2.new(0, 375,0, 370) then
@@ -2977,8 +2906,6 @@ function Library:SetTheme(themeName)
 	self.dFrame_2.BackgroundColor3 = self.Theme.DestroyGFrame
 	self.dTextLabel.TextColor3 = self.Theme.TextColor
 	self.dTextButton.TextColor3 = self.Theme.TextColor
-	--self.dTextButton.Transparency = self.Theme.dbtntran
-	--self.dTextButton_2.Transparency = self.Theme.dbtntran
 	self.dTextButton.BackgroundColor3 = self.Theme.dbtncolor
 	self.dTextButton_2.BackgroundColor3 = self.Theme.dbtncolor
 	self.dTextLabel_2.TextColor3 = self.Theme.SubTtitleTextColor
