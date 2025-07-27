@@ -45,7 +45,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = Players.LocalPlayer.PlayerGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -902,7 +902,7 @@ function Library:AddTab(name,icon)
 	Frame_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Frame_3.BorderSizePixel = 0
 	Frame_3.Position = UDim2.new(0.0299999993, 0, 0, 5 + self.tabpos)
-	Frame_3.Size = UDim2.new(0, 171, 0, 35)
+	Frame_3.Size = UDim2.new(0, 173, 0, 35)
 	Frame_3.Text = ''
 	table.insert(tab.Tab, Frame_3)
 
@@ -929,17 +929,25 @@ function Library:AddTab(name,icon)
 	UICorner.CornerRadius = UDim.new(0, 5)
 	UICorner.Parent = Frame_3
 
-	local textpos2 = 0.0300959265
+	local textpos2 = 0.05
 
 	if (icon ~= nil and icon ~= '') then
-		textpos2 = 0.24
+		textpos2 = 0.21
 	else
-		textpos2 = 0.0300959265
+		textpos2 = 0.05
 		icon = 1
 	end
 
-	if (icon == "Settings") then
+	if icon == "Settings" then
 		icon = "rbxassetid://103450663687860"
+	elseif icon == "Visual" then
+		icon = "rbxassetid://88552609982363"
+	elseif icon == "Player" then
+		icon = "rbxassetid://115824076979644"
+	elseif icon == "Combat" then
+		icon = "rbxassetid://108715264661822"
+	elseif icon == "Generator" then
+		icon = "rbxassetid://138832805084579"
 	end
 
 	TextLabel_3.Parent = Frame_3
@@ -947,7 +955,7 @@ function Library:AddTab(name,icon)
 	TextLabel_3.BackgroundTransparency = 1.000
 	TextLabel_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TextLabel_3.BorderSizePixel = 0
-	TextLabel_3.Position = UDim2.new(textpos2, 0, 0, 0)
+	TextLabel_3.Position = UDim2.new(textpos2, 0, 0, -1)
 	TextLabel_3.Size = UDim2.new(0, 52, 0, 35)
 	TextLabel_3.Font = Enum.Font.FredokaOne
 	TextLabel_3.Text = name
@@ -961,7 +969,7 @@ function Library:AddTab(name,icon)
 	Frame_4.BackgroundTransparency = 1.000
 	Frame_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Frame_4.BorderSizePixel = 0
-	Frame_4.Position = UDim2.new(0, 0, 0.171428576, 0)
+	Frame_4.Position = UDim2.new(0, 1, 0.171428576, 0)
 	Frame_4.Size = UDim2.new(0, 2, 0, 0)
 	table.insert(tab.Tab, 3,Frame_4)
 
@@ -987,7 +995,7 @@ function Library:AddTab(name,icon)
 	ImageLabel.BackgroundTransparency = 1.000
 	ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ImageLabel.BorderSizePixel = 0
-	ImageLabel.Position = UDim2.new(0.0643274859, 0, 0.171428576, 0)
+	ImageLabel.Position = UDim2.new(0, 8, 0, 6.5)
 	ImageLabel.Size = UDim2.new(0, 22, 0, 22)
 	ImageLabel.Image = icon
 	table.insert(tab.Tab,4,ImageLabel)
@@ -1261,7 +1269,7 @@ function Library:AddTab(name,icon)
 		Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Frame.BorderSizePixel = 0
-		Frame.Position = UDim2.new(0.07, 0, 0.119999997, 0)
+		Frame.Position = UDim2.new(0, 3, 0.119999997, 0)
 		Frame.Size = UDim2.new(0, 19, 0, 19)
 
 		Frame2.Parent = sliderbutton
@@ -1269,7 +1277,7 @@ function Library:AddTab(name,icon)
 		table.insert(tab.ActiveToggleColor, Frame2)
 		Frame2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Frame2.BorderSizePixel = 0
-		Frame2.Position = UDim2.new(0.07, 0, 0.119999997, 0)
+		Frame2.Position = UDim2.new(0, 3, 0.119999997, 0)
 		Frame2.Size = UDim2.new(0, 0, 0, 19)
 		Frame2.ZIndex = -1
 
@@ -1280,10 +1288,10 @@ function Library:AddTab(name,icon)
 			Value = toggle.Default,
 			UpdateVisuals = function(self, state)
 				if state then
-					Library:Tween(Frame, {Position = UDim2.new(0.6, 0, 0.12, 0)}, 0.2)
+					Library:Tween(Frame, {Position = UDim2.new(0, 32, 0.12, 0)}, 0.2)
 					Library:Tween(Frame2, {Size = UDim2.new(0, 47, 0, 19), BackgroundTransparency = 0}, 0.2)
 				else
-					Library:Tween(Frame, {Position = UDim2.new(0.07, 0, 0.12, 0)}, 0.2)
+					Library:Tween(Frame, {Position = UDim2.new(0, 3, 0.12, 0)}, 0.2)
 					Library:Tween(Frame2, {Size = UDim2.new(0, 0, 0, 19), BackgroundTransparency = 1}, 0.2)
 				end
 			end,
@@ -1307,7 +1315,7 @@ function Library:AddTab(name,icon)
 		toggleController:UpdateVisuals(toggleController.Value)
 
 		local toggleData = {
-			value = toggleController.Value,
+			callback = toggle.Callback,
 			controller = toggleController
 		}
 		table.insert(self.Library.AllToggles, toggleData)
@@ -2227,7 +2235,7 @@ function Library:AddTab(name,icon)
 
 			Option.MouseEnter:Connect(function()
 				Library:Tween(Option,{BackgroundTransparency = 0.95},0.3)
-				Library:Tween(Frame,{Size = UDim2.new(0, 2, 0, 23)},0.3)
+				Library:Tween(Frame,{Size = UDim2.new(0, 2, 0, 22)},0.3)
 				Library:Tween(Frame,{BackgroundTransparency = 0},0.3)
 			end)
 
@@ -2236,7 +2244,23 @@ function Library:AddTab(name,icon)
 				Library:Tween(Frame,{BackgroundTransparency = 1},0.3)
 				Library:Tween(Frame,{Size = UDim2.new(0, 2, 0, 0)},0.3)
 			end)
+			
+			local result = ""
+			local len = #optionText
 
+			for i = 1, len, 17 do
+				local segment_end = math.min(i + 15, len)
+
+				result = result .. optionText:sub(i, segment_end)
+
+				if segment_end < len then
+					result = result .. "\n"
+				end
+			end
+			result = result:sub(1, 33)
+
+			optionText = result
+			
 			TextLabel.Parent = Option
 			TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			TextLabel.BackgroundTransparency = 1.000
@@ -2256,7 +2280,7 @@ function Library:AddTab(name,icon)
 			Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			Frame.BorderSizePixel = 0
-			Frame.Position = UDim2.new(0.019, 0, 0.167, 0)
+			Frame.Position = UDim2.new(0.01, 0, 0, 4)
 			Frame.Size = UDim2.new(0, 2, 0, 0)
 			Frame.ZIndex = 22
 			Frame.Transparency = 1
@@ -2285,13 +2309,64 @@ function Library:AddTab(name,icon)
 					local selectedText = ""
 					for opt, sel in pairs(dropdown.Selected) do
 						if sel then
-							selectedText = selectedText .. (selectedText == "" and opt or ", " .. opt)
+							selectedText = selectedText .. (selectedText == "" and opt or "," .. opt)
 						end
 					end
 
-					TextLabel.Text = selectedText == "" and "Select..." or selectedText
+					local function smart_line_break(str)
+						local visible_count = 0
+						local last_visible_pos = 0
+
+						for i = 1, #str do
+							local c = str:sub(i, i)
+							if c ~= " " and c ~= "," then
+								visible_count = visible_count + 1
+								last_visible_pos = i
+							end
+
+							if visible_count >= 14 then
+								local break_pos = i
+								for j = i + 1, #str do
+									local next_char = str:sub(j, j)
+									if next_char ~= " " and next_char ~= "," then
+										break
+									end
+									break_pos = j
+								end
+								if #str >= 28 then
+									str = str:sub(1, 28) .. "..."
+								end
+								return str:sub(1, break_pos) .. "\n" .. str:sub(break_pos + 1)
+							end
+						end
+
+						if #str >= 28 then
+							str = str:sub(1, 28) .. "..."
+						end
+						return str
+					end
+				
+					TextLabel.Text = selectedText == "" and "Select..." or smart_line_break(selectedText)
 				else
-					TextLabel.Text = option
+					local result = ""
+					local len = #option
+
+					for i = 1, len, 18 do
+						local segment_end = math.min(i + 12, len)
+
+						result = result .. option:sub(i, segment_end)
+
+						if segment_end < len then
+							result = result .. "\n"
+						end
+					end
+					result = result:sub(1, 26)
+					
+					if #result >= 26 then
+						result = result:sub(1, 26) .. "..."
+					end
+
+					TextLabel.Text = result
 					dropdown.Selected = option
 					Library:Tween(ImageLabel_2, {Size = UDim2.new(0, 140, 0, 0)}, 0.2)
 					Library:Tween(Options, {Size = UDim2.new(0, 130, 0, 0)}, 0.2)
@@ -2543,10 +2618,9 @@ function Library:Destroy()
 		end
 	end
 	for _, toggle in ipairs(self.AllToggles) do
-		if toggle.value then
-			toggle.value = false
-			if toggle.callback then
-				toggle.callback(false)
+		if toggle["controller"]["Value"] == true then
+			if toggle["callback"] then
+				toggle["callback"](false) 
 			end
 		end
 	end
@@ -2912,8 +2986,6 @@ function Library:SetTheme(themeName)
 	self.dTextButton_2.TextColor3 = self.Theme.TextColor
 	self.wTextLabel.TextColor3 = self.Theme.TextColor
 	self.wTextLabel_2.TextColor3 = self.Theme.SubTtitleTextColor
-
-
 	for i,v in pairs(self.mainTabs) do
 		v.Tab[1].BackgroundColor3 = v.Theme.TabColor
 		v.Tab[2].TextColor3 = v.Theme.TextColor
@@ -2921,6 +2993,22 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://107272757319367"
 		elseif v.Tab[4].Image == "rbxassetid://107272757319367" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://103450663687860"
+		elseif v.Tab[4].Image == "rbxassetid://88552609982363" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://127387822862188"
+		elseif v.Tab[4].Image == "rbxassetid://127387822862188" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://88552609982363"
+		elseif v.Tab[4].Image == "rbxassetid://115824076979644" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://122846403922442"
+		elseif v.Tab[4].Image == "rbxassetid://122846403922442" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://115824076979644"
+		elseif v.Tab[4].Image == "rbxassetid://108715264661822" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://95489688881951"
+		elseif v.Tab[4].Image == "rbxassetid://95489688881951" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://108715264661822"
+		elseif v.Tab[4].Image == "rbxassetid://138832805084579" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://97094424684790"
+		elseif v.Tab[4].Image == "rbxassetid://97094424684790" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://138832805084579"
 		end
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
