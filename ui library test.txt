@@ -2698,13 +2698,23 @@ function Library:Close()
 	end
 end
 
-function Library:TurnOffAllFunctions(CallBack)
+function Library:TurnOffAllFunctions(WhiteList,CallBack)
 	for _, toggle in ipairs(self.AllToggles) do
-		if toggle["controller"]["Value"] == true then
-			toggle["controller"]["Value"] = false
-			toggle["controller"]["UpdateVisuals"](false)
-			if toggle["callback"] then
-				toggle["callback"](false) 
+		local check = false
+		if WhiteList ~= nil then
+			for i,v in pairs(WhiteList) do
+				if v == toggle["controller"] then
+					check = true
+				end
+			end
+		end
+		if not check then
+			if toggle["controller"]["Value"] == true then
+				toggle["controller"]["Value"] = false
+				toggle["controller"]["UpdateVisuals"](false)
+				if toggle["callback"] then
+					toggle["callback"](false) 
+				end
 			end
 		end
 	end
