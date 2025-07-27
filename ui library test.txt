@@ -2698,6 +2698,21 @@ function Library:Close()
 	end
 end
 
+function Library:TurnOffAllFunctions(CallBack)
+	for _, toggle in ipairs(self.AllToggles) do
+		if toggle["controller"]["Value"] == true then
+			toggle["controller"]["Value"] = false
+			toggle["controller"]["UpdateVisuals"](false)
+			if toggle["callback"] then
+				toggle["callback"](false) 
+			end
+		end
+	end
+	if CallBack then
+		CallBack()
+	end
+end
+
 function Library:SetTheme(themeName)
 	if themeName == "Dark" then
 		self.Theme = {
