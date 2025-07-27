@@ -2248,8 +2248,8 @@ function Library:AddTab(name,icon)
 			local result = ""
 			local len = #optionText
 
-			for i = 1, len, 20 do
-				local segment_end = math.min(i + 19, len)
+			for i = 1, len, 19 do
+				local segment_end = math.min(i + 18, len)
 
 				result = result .. optionText:sub(i, segment_end)
 
