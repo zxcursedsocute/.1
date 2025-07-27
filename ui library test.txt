@@ -45,7 +45,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = Players.LocalPlayer.PlayerGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -948,6 +948,10 @@ function Library:AddTab(name,icon)
 		icon = "rbxassetid://108715264661822"
 	elseif icon == "Generator" then
 		icon = "rbxassetid://138832805084579"
+	elseif icon == "AutoFarm" then
+		icon = "rbxassetid://125163773482315"
+	elseif icon == "Animation" then
+		icon = "rbxassetid://109675987433260"
 	end
 
 	TextLabel_3.Parent = Frame_3
@@ -2244,7 +2248,7 @@ function Library:AddTab(name,icon)
 				Library:Tween(Frame,{BackgroundTransparency = 1},0.3)
 				Library:Tween(Frame,{Size = UDim2.new(0, 2, 0, 0)},0.3)
 			end)
-			
+
 			local result = ""
 			local len = #optionText
 
@@ -2260,7 +2264,7 @@ function Library:AddTab(name,icon)
 			result = result:sub(1, 33)
 
 			optionText = result
-			
+
 			TextLabel.Parent = Option
 			TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			TextLabel.BackgroundTransparency = 1.000
@@ -2345,7 +2349,7 @@ function Library:AddTab(name,icon)
 						end
 						return str
 					end
-				
+
 					TextLabel.Text = selectedText == "" and "Select..." or smart_line_break(selectedText)
 				else
 					local result = ""
@@ -2361,7 +2365,7 @@ function Library:AddTab(name,icon)
 						end
 					end
 					result = result:sub(1, 26)
-					
+
 					if #result >= 26 then
 						result = result:sub(1, 26) .. "..."
 					end
@@ -3034,7 +3038,17 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://97094424684790"
 		elseif v.Tab[4].Image == "rbxassetid://97094424684790" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://138832805084579"
+		elseif v.Tab[4].Image == "rbxassetid://125163773482315" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://107678550426269"
+		elseif v.Tab[4].Image == "rbxassetid://107678550426269" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://125163773482315"
+		elseif v.Tab[4].Image == "rbxassetid://109675987433260" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://139296203344551"
+		elseif v.Tab[4].Image == "rbxassetid://139296203344551" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://109675987433260"
 		end
+		
+		
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
 		for i2,v2 in pairs(v.ElemBtn) do
