@@ -511,8 +511,6 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Tabs.Position = UDim2.new(0.0203390867, 0, 0.110416666, 0)
 	self.Tabs.Size = UDim2.new(0, 185, 0, 371)
 
-
-
 	self.WindowUser = Instance.new("Frame")
 	local Frame_2 = Instance.new("Frame")
 	local ImageLabel = Instance.new("ImageLabel")
@@ -952,7 +950,11 @@ function Library:AddTab(name,icon)
 		icon = "rbxassetid://125163773482315"
 	elseif icon == "Animation" then
 		icon = "rbxassetid://109675987433260"
+	elseif icon == "Items" then
+		icon = "rbxassetid://116456687305167"
 	end
+
+
 
 	TextLabel_3.Parent = Frame_3
 	TextLabel_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
