@@ -3048,7 +3048,13 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://139296203344551"
 		elseif v.Tab[4].Image == "rbxassetid://139296203344551" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://109675987433260"
+		elseif v.Tab[4].Image == "rbxassetid://140391939892927" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://116456687305167"
+		elseif v.Tab[4].Image == "rbxassetid://116456687305167" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://140391939892927"
 		end
+
+
 		
 		
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
