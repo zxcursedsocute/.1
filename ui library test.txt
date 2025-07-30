@@ -951,7 +951,7 @@ function Library:AddTab(name,icon)
 	elseif icon == "Animation" then
 		icon = "rbxassetid://109675987433260"
 	elseif icon == "Items" then
-		icon = "rbxassetid://140391939892927"
+		icon = "rbxassetid://104651616243172"
 	end
 
 
@@ -3048,10 +3048,10 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://139296203344551"
 		elseif v.Tab[4].Image == "rbxassetid://139296203344551" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://109675987433260"
-		elseif v.Tab[4].Image == "rbxassetid://140391939892927" and themeName == "White" then
-			v.Tab[4].Image = "rbxassetid://116456687305167"
-		elseif v.Tab[4].Image == "rbxassetid://116456687305167" and themeName ~= "White" then
-			v.Tab[4].Image = "rbxassetid://140391939892927"
+		elseif v.Tab[4].Image == "rbxassetid://104651616243172" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://90198470195102"
+		elseif v.Tab[4].Image == "rbxassetid://90198470195102" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://104651616243172"
 		end
 
 
