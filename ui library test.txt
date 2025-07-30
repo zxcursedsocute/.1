@@ -951,7 +951,7 @@ function Library:AddTab(name,icon)
 	elseif icon == "Animation" then
 		icon = "rbxassetid://109675987433260"
 	elseif icon == "Items" then
-		icon = "rbxassetid://116456687305167"
+		icon = "rbxassetid://140391939892927"
 	end
 
 
