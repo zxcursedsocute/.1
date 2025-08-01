@@ -1,3 +1,4 @@
+local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -45,7 +46,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = Players.LocalPlayer.PlayerGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -391,6 +392,42 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Header.BorderSizePixel = 0
 	self.Header.Position = UDim2.new(0.0203390867, 0, 0.0250000004, 0)
 	self.Header.Size = UDim2.new(0, size - 24, 0, 40)
+	
+	local Search = Instance.new("Frame")
+	local SearchUICorner = Instance.new("UICorner")
+	local SearchImageLabel = Instance.new("ImageLabel")
+	local SearchTextBox = Instance.new("TextBox")
+
+	Search.Parent = self.Header
+	Search.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
+	Search.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Search.BorderSizePixel = 0
+	Search.Position = UDim2.new(0.574973166, 0, 0.170000076, 0)
+	Search.Size = UDim2.new(0, 118, 0, 26)
+
+	SearchUICorner.Parent = Search
+
+	SearchImageLabel.Parent = Search
+	SearchImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	SearchImageLabel.BackgroundTransparency = 1.000
+	SearchImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	SearchImageLabel.BorderSizePixel = 0
+	SearchImageLabel.Position = UDim2.new(0.813980877, 0, 0.192307696, 0)
+	SearchImageLabel.Size = UDim2.new(0, 16, 0, 16)
+	SearchImageLabel.Image = "rbxassetid://131200540387892"
+
+	SearchTextBox.Parent = Search
+	SearchTextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	SearchTextBox.BackgroundTransparency = 1.000
+	SearchTextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	SearchTextBox.BorderSizePixel = 0
+	SearchTextBox.Position = UDim2.new(0.04, 0, 0.115000002, -0.75)
+	SearchTextBox.Size = UDim2.new(0, 90, 0, 20)
+	SearchTextBox.Font = Enum.Font.SourceSans
+	SearchTextBox.Text = "Search..."
+	SearchTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	SearchTextBox.TextSize = 14.000
+	SearchTextBox.TextXAlignment = Enum.TextXAlignment.Left
 
 	local function substr(str)
 		local strlen = string.len(str)
@@ -733,8 +770,10 @@ function Library.CreateWindow(title,subtitle,size)
 		end
 
 		task.delay(noti.duration, function()
-			if self.ActiveNotifications[notificationId] then
-				self:CloseNotification(notificationId)
+			if self.ActiveNotifications ~= nil then
+				if self.ActiveNotifications[notificationId] then
+					self:CloseNotification(notificationId)
+				end
 			end
 		end)
 	end
@@ -887,6 +926,12 @@ function Library:AddTab(name,icon)
 		Connections = {},
 		KeybindConnections = {},
 		ColorPickerColor = {},
+		Toggles = {},
+		Keybinds = {},
+		Dropdowns = {},
+		Sliders = {},
+		ColorPickers = {},
+		Inputs = {}
 	}
 
 	local Frame_3 = Instance.new("TextButton")
@@ -1197,7 +1242,7 @@ function Library:AddTab(name,icon)
 	function tab:AddToggle(config)
 		local toggle = {
 			Name = config.Name,
-			Description = config.Description,
+			Description = config.Description or '',
 			Default = config.Default or false,
 			Callback = config.Callback
 		}
@@ -1333,7 +1378,8 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Toggle)
 		self.pos += 50
 		tab:CalcScroll()
-
+		
+		tab.Toggles[config.Name] = toggleController
 		return toggleController
 	end
 
@@ -1341,7 +1387,7 @@ function Library:AddTab(name,icon)
 		local Keybind = {
 			Name = config.Name,
 			Description = config.Description,
-			key = config.Default or Enum.KeyCode.LeftShift,
+			key = config.Default or "None",
 			Callback = config.Callback
 		}
 
@@ -1421,10 +1467,16 @@ function Library:AddTab(name,icon)
 		local button = TextButton
 		local key = Keybind.key
 		button.Text = tostring(Keybind.key.Name)
+		if button.Text == "nil" then
+			button.Text = 'None'
+		end
+
 
 		local function setKey(newKey)
-			key = newKey
-			button.Text = newKey.Name
+			if newKey then
+				key = newKey
+				button.Text = newKey and newKey.Name or "None"
+			end
 		end
 
 		local selectConnection = button.MouseButton1Click:Connect(function()
@@ -1434,7 +1486,7 @@ function Library:AddTab(name,icon)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					connection:Disconnect()
 					setKey(input)
-					button.Text = 'nil'
+					button.Text = 'None'
 				end
 				if input.UserInputType == Enum.UserInputType.Keyboard then
 					wait(0.01)
@@ -1456,6 +1508,18 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, keybind)
 		self.pos += 50
 		tab:CalcScroll()
+		
+		local keybindObj = {
+			Name = config.Name,
+			Key = key,
+			SetKey = setKey,
+			GetState = function(self)
+				return button.Text
+			end,
+			Callback = config.Callback
+		}
+		tab.Keybinds[config.Name] = keybindObj
+		return keybindObj
 	end
 
 	function tab:AddInput(config)
@@ -1552,10 +1616,26 @@ function Library:AddTab(name,icon)
 				TextBox.Text = Input.Default
 			end
 		end)
+		
+		local function SetInput(Text2)
+			TextBox.Text = Text2
+			config.Callback(TextBox.Text)
+		end
 
 		table.insert(self.Elements, input)
 		self.pos += 50
 		tab:CalcScroll()
+		
+		local InputObj = {
+			Name = config.Name,
+			SetText = SetInput,
+			GetState = function(self)
+				return TextBox.Text
+			end,
+			Callback = config.Callback
+		}
+		tab.Inputs[config.Name] = InputObj
+		return InputObj
 	end
 
 	function tab:AddSlider(config)
@@ -1715,6 +1795,18 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, slider)
 		self.pos += 50
 		tab:CalcScroll()
+		
+		local sliderObj = {
+			Name = config.Name,
+			Value = value,
+			GetState = function(self)
+				return value
+			end,
+			SetValue = updateValue
+		}
+
+		tab.Sliders[config.Name] = sliderObj
+		return sliderObj
 	end
 
 	function tab:AddColorPicker(config)
@@ -2074,6 +2166,8 @@ function Library:AddTab(name,icon)
 		function colorPickerObj:GetColor()
 			return currentColor
 		end
+		
+		tab.ColorPickers[config.Name] = colorPickerObj
 
 		return colorPickerObj
 	end
@@ -2430,6 +2524,80 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Dropdown)
 		self.pos += 50
 		tab:CalcScroll()
+		
+		local dropdownObj = {
+			Name = config.Name,
+			Value = config.Default,
+			Options = config.Options,
+			Multi = config.Multi,
+			SetValue = function(self, value)
+				-- Обработка мультивыбора
+				if self.Multi then
+					-- Если передана таблица значений
+					if type(value) == "table" then
+						dropdown.Selected = {}
+						for _, option in ipairs(value) do
+							if table.find(self.Options, option) then
+								dropdown.Selected[option] = true
+							end
+						end
+						-- Если передана строка (для совместимости)
+					elseif type(value) == "string" then
+						dropdown.Selected = {}
+						for option in string.gmatch(value, "([^,]+)") do
+							option = option:gsub("^%s*(.-)%s*$", "%1")
+							if table.find(self.Options, option) then
+								dropdown.Selected[option] = true
+							end
+						end
+					end
+				else
+					-- Одиночный выбор
+					if table.find(self.Options, value) then
+						dropdown.Selected = value
+					end
+				end
+
+				-- Обновление отображаемого текста
+				local displayText = ""
+				if self.Multi then
+					local selectedList = {}
+					for option, selected in pairs(dropdown.Selected) do
+						if selected then
+							table.insert(selectedList, option)
+						end
+					end
+					displayText = table.concat(selectedList, ", ")
+					if #displayText > 20 then
+						displayText = displayText:sub(1, 17) .. "..."
+					end
+				else
+					displayText = dropdown.Selected or "Select..."
+					if #displayText > 20 then
+						displayText = displayText:sub(1, 17) .. "..."
+					end
+				end
+
+				TextLabel.Text = displayText
+
+				-- Вызов колбэка
+				if config.Callback then
+					if self.Multi then
+						config.Callback(dropdown.Selected)
+					else
+						config.Callback(dropdown.Selected)
+					end
+				end
+			end
+		}
+
+		-- Инициализация начального значения
+		if config.Default then
+			dropdownObj:SetValue(config.Default)
+		end
+
+		tab.Dropdowns[config.Name] = dropdownObj
+		return dropdownObj
 	end
 
 	self.ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, self.tabpos + 2)
@@ -2643,6 +2811,7 @@ function Library:Destroy()
 	self.UI:Destroy()
 	setmetatable(self, nil)
 	table.clear(self)
+	table.remove(self)
 end
 
 function Library:ShowDestroyQ()
@@ -2727,6 +2896,164 @@ function Library:TurnOffAllFunctions(WhiteList,CallBack)
 	if CallBack then
 		CallBack()
 	end
+end
+
+function Library:GetConfig(filename)
+	if not isfile(filename) then
+		self:Notification({
+			Name = "Error",
+			Description = "Config not found",
+			Duration = 10,
+			Type = "Error"
+		})
+	else
+		setclipboard(readfile(filename))
+		self:Notification({
+			Name = "Config",
+			Description = "The config has been successfully copied to the clipboard",
+			Duration = 10,
+			Type = "Notification"
+		})
+	end
+end
+
+function Library:InputConfig(filename,Config)
+	writefile(filename,game:GetService("HttpService"):JSONDecode(Config))
+end
+
+function Library:SaveConfig(foldername,filename)
+	local config = {
+		Toggles = {},
+		Keybinds = {},
+		Dropdowns = {},
+		Sliders = {},
+		ColorPickers = {},
+		Inputs = {}
+	}
+
+	for _, tab in ipairs(self.mainTabs) do
+		for name, toggle in pairs(tab.Toggles) do
+			config.Toggles[name] = toggle:GetState()
+		end
+
+		for name, keybind in pairs(tab.Keybinds) do
+			config.Keybinds[name] = keybind:GetState()
+		end
+		
+		for name, Input in pairs(tab.Inputs) do
+			config.Inputs[name] = Input:GetState()
+		end
+
+		for name, dropdown in pairs(tab.Dropdowns) do
+			config.Dropdowns[name] = dropdown.Value
+		end
+
+		for name, slider in pairs(tab.Sliders) do
+			config.Sliders[name] = slider:GetState()
+		end
+
+		for name, colorPicker in pairs(tab.ColorPickers) do
+			local color = colorPicker:GetColor()
+			config.ColorPickers[name] = {
+				R = color.R,
+				G = color.G,
+				B = color.B
+			}
+		end
+	end
+	
+	if not isfolder(foldername) then
+		makefolder(foldername)
+	end
+	writefile(foldername .. "/" .. filename, config)
+end
+
+function Library:LoadConfig(filename)
+	if not isfile(filename) then return false end
+
+	local success, data = pcall(function()
+		return game:GetService("HttpService"):JSONDecode(readfile(filename))
+	end)
+
+	if not success then return false end
+	
+	--[[local data =  {
+		["ColorPickers"] = {
+			["test"] = {["B"] = 1,["G"] = 1,["R"] = 1}
+		},
+		["Dropdowns"] = {
+			["Theme"] = "Black"
+		},
+		["Keybinds"] = {
+			["Close Window"] = "LeftControl",
+			["Column Window"] = "None",
+			["Fly"] = "Nine",
+			["Minimaze Window"] = "None"
+		},
+		["Sliders"] = {
+			["Fly"] = 49.43994140625
+		},
+		["Toggles"] = {
+			["Blur"] = true,
+			["GodMode"] = true,
+			["Transparance"] = true,
+			["User info"] = false
+		},
+		["Inputs"] = {
+			["tse"] = "123"
+		}
+	}--]]
+
+	for _, tab in ipairs(self.mainTabs) do
+		for name, state in pairs(data.Toggles) do
+			if tab.Toggles[name] then
+				tab.Toggles[name]:SetState(state)
+			end
+		end
+
+		for name, keyStr in pairs(data.Keybinds) do
+			for _, tab in ipairs(self.mainTabs) do
+				if tab.Keybinds[name] then
+					local keyCode
+					if keyStr ~= "None" then
+						keyCode = Enum.KeyCode[keyStr]
+					else
+						keyCode = nil
+					end
+					if keyCode then
+						tab.Keybinds[name].SetKey(keyCode)
+					end
+				end
+			end
+		end
+		
+		for name, value in pairs(data.Inputs) do
+			if tab.Inputs[name] then
+				tab.Inputs[name].SetText(value)
+			end
+		end
+
+		for name, value in pairs(data.Dropdowns) do
+			if tab.Dropdowns[name] then
+				tab.Dropdowns[name]:SetValue(value)
+			end
+		end
+
+		for name, value in pairs(data.Sliders) do
+			if tab.Sliders[name] then
+				tab.Sliders[name].SetValue(value)
+			end
+		end
+
+		for name, colorData in pairs(data.ColorPickers) do
+			if tab.ColorPickers[name] then
+				local color = Color3.new(colorData.R, colorData.G, colorData.B)
+				tab.ColorPickers[name]:SetColor(color)
+			end
+		end
+	end
+
+	return true
 end
 
 function Library:SetTheme(themeName)
@@ -3053,10 +3380,6 @@ function Library:SetTheme(themeName)
 		elseif v.Tab[4].Image == "rbxassetid://90198470195102" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://104651616243172"
 		end
-
-
-		
-		
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
 		for i2,v2 in pairs(v.ElemBtn) do
