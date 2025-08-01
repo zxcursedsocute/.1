@@ -2912,7 +2912,7 @@ function Library:GetConfig(filename)
 			Type = "Error"
 		})
 	else
-		setclipboard(readfile(filename))
+		setclipboard(game:GetService("HttpService"):JSONDecode(readfile(filename)))
 		self:Notification({
 			Name = "Config",
 			Description = "The config has been successfully copied to the clipboard",
@@ -2923,7 +2923,7 @@ function Library:GetConfig(filename)
 end
 
 function Library:InputConfig(filename,Config)
-	writefile(filename,Config)
+	writefile(filename,game:GetService("HttpService"):JSONEncode(Config))
 end
 
 function Library:SaveConfig(foldername,filename)
@@ -3431,6 +3431,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
