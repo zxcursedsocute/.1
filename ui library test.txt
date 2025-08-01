@@ -2524,12 +2524,17 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Dropdown)
 		self.pos += 50
 		tab:CalcScroll()
+
+		local function getvalue()
+			return dropdown.Selected
+		end
 		
 		local dropdownObj = {
 			Name = config.Name,
 			Value = config.Default,
 			Options = config.Options,
 			Multi = config.Multi,
+			GetValue = getvalue,
 			SetValue = function(self, value)
 				-- Обработка мультивыбора
 				if self.Multi then
@@ -2945,7 +2950,7 @@ function Library:SaveConfig(foldername,filename)
 		end
 
 		for name, dropdown in pairs(tab.Dropdowns) do
-			config.Dropdowns[name] = dropdown.Value
+			config.Dropdowns[name] = dropdown.GetValue()
 		end
 
 		for name, slider in pairs(tab.Sliders) do
@@ -3426,6 +3431,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
