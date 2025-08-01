@@ -2913,7 +2913,8 @@ function Library:GetConfig(filename)
 		})
 	else
 local text = readfile(filename)
-		setclipboard(game:GetService("HttpService"):JSONDecode(text))
+local tetx2 = game:GetService("HttpService"):JSONDecode(text)
+		setclipboard(text2)
 		self:Notification({
 			Name = "Config",
 			Description = "The config has been successfully copied to the clipboard",
@@ -3432,6 +3433,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
