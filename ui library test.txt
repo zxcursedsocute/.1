@@ -2965,7 +2965,8 @@ function Library:SaveConfig(foldername,filename)
 	if not isfolder(foldername) then
 		makefolder(foldername)
 	end
-	writefile(foldername .. "/" .. filename, config)
+local file = foldername .. "/" .. filename
+	writefile(file, config)
 end
 
 function Library:LoadConfig(filename)
@@ -3426,3 +3427,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
