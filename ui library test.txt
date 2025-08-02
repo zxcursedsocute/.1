@@ -2913,6 +2913,7 @@ function Library:GetConfig(filename)
 		})
 	else
 local text = readfile(filename)
+print(text)
 local tetx2 = game:GetService("HttpService"):JSONDecode(text)
 print(tetx2)
 		setclipboard(tetx2)
@@ -3434,6 +3435,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
