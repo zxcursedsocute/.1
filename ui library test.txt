@@ -2912,11 +2912,7 @@ function Library:GetConfig(filename)
 			Type = "Error"
 		})
 	else
-local text = readfile(filename)
-print(text)
-local tetx2 = game:GetService("HttpService"):JSONDecode(text)
-print(tetx2)
-		setclipboard(tetx2)
+		setclipboard(readfile(filename))
 		self:Notification({
 			Name = "Config",
 			Description = "The config has been successfully copied to the clipboard",
@@ -3435,6 +3431,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
