@@ -2975,6 +2975,25 @@ function Library:SaveConfig(foldername,filename)
 	writefile(foldername .. "/" .. filename, game:GetService("HttpService"):JSONEncode(config))
 end
 
+function Library:IsLoadConfig(filename)
+	if not isfile(filename) then return false end
+
+	local success, data = pcall(function()
+		return game:GetService("HttpService"):JSONDecode(readfile(filename))
+	end)
+
+	if not success then return false end
+	if not data.Toggles then
+		return
+	end
+	for name, state in pairs(data.Toggles) do
+		if name == "Load Config" then
+			self:LoadConfig(filename)
+		end
+	end
+
+end
+
 function Library:LoadConfig(filename)
 	if not isfile(filename) then return false end
 
@@ -3433,6 +3452,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
