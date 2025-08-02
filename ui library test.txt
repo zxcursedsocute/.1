@@ -2914,7 +2914,7 @@ function Library:GetConfig(filename)
 	else
 local text = readfile(filename)
 local tetx2 = game:GetService("HttpService"):JSONDecode(text)
-print(text2)
+print(tetx2)
 		setclipboard(tetx2)
 		self:Notification({
 			Name = "Config",
@@ -3434,6 +3434,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
