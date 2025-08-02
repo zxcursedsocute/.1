@@ -2989,6 +2989,7 @@ function Library:IsLoadConfig(filename)
 	for name, state in pairs(data.Toggles) do
 		if name == "Load Config" and state == true then
 print(self)
+			tab.Toggles[name]:SetState(state)
 			self:LoadConfig(filename)
 		end
 	end
@@ -3453,3 +3454,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
