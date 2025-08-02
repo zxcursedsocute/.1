@@ -2987,7 +2987,7 @@ function Library:IsLoadConfig(filename)
 		return
 	end
 	for name, state in pairs(data.Toggles) do
-		if name == "Load Config" then
+		if name == "Load Config" and state == true then
 			self:LoadConfig(filename)
 		end
 	end
@@ -3452,6 +3452,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
