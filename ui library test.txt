@@ -1527,6 +1527,7 @@ function Library:AddTab(name,icon)
 			Name = config.Name,
 			Description = config.Description,
 			SaveUserText = config.SaveUserText or false,
+			SaveConfig = config.SaveConfig or false
 			Default = config.Default or "Default",
 			Callback = config.Callback
 		}
@@ -1632,6 +1633,7 @@ function Library:AddTab(name,icon)
 			GetState = function(self)
 				return TextBox.Text
 			end,
+			SaveConfig = Input.SaveConfig
 			Callback = config.Callback
 		}
 		tab.Inputs[config.Name] = InputObj
@@ -3033,7 +3035,7 @@ function Library:LoadConfig(filename)
 		end
 		
 		for name, value in pairs(data.Inputs) do
-			if tab.Inputs[name] then
+			if tab.Inputs[name] and tab.Inputs[name].SaveConfig == false then
 				tab.Inputs[name].SetText(value)
 			end
 		end
@@ -3431,6 +3433,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
