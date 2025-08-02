@@ -2925,7 +2925,7 @@ function Library:GetConfig(filename)
 end
 
 function Library:InputConfig(filename,Config)
-	writefile(filename,game:GetService("HttpService"):JSONEncode(Config))
+	writefile(filename,Config)
 end
 
 function Library:SaveConfig(foldername,filename)
@@ -3433,4 +3433,5 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
