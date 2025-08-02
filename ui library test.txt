@@ -2996,6 +2996,7 @@ print(self)
 end
 
 function Library:LoadConfig(filename)
+wait(1)
 	if not isfile(filename) then return false end
 
 	local success, data = pcall(function()
@@ -3453,6 +3454,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
