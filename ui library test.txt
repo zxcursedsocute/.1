@@ -2790,6 +2790,11 @@ function Library:ColumnWindow()
 end
 
 function Library:Destroy()
+    if self.saveFolder and self.saveFileName then
+        pcall(function()
+            self:SaveConfig(self.saveFolder, self.saveFileName)
+        end)
+    end
 	for _, tab in ipairs(self.mainTabs) do
 		for _, connection in ipairs(tab.Connections) do
 			connection:Disconnect()
@@ -3083,6 +3088,13 @@ function Library:LoadConfig(filename)
 	end
 
 	return true
+end
+self.saveFolder = nil
+self.saveFileName = nil
+
+function Library:SetSavePath(folder, filename)
+    self.saveFolder = folder
+    self.saveFileName = filename
 end
 
 function Library:SetTheme(themeName)
@@ -3455,6 +3467,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
