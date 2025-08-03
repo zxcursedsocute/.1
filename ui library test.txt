@@ -3012,37 +3012,10 @@ function Library:LoadConfig(filename)
 	end)
 
 	if not success then return false end
-	
-	--[[local data =  {
-		["ColorPickers"] = {
-			["test"] = {["B"] = 1,["G"] = 1,["R"] = 1}
-		},
-		["Dropdowns"] = {
-			["Theme"] = "Black"
-		},
-		["Keybinds"] = {
-			["Close Window"] = "LeftControl",
-			["Column Window"] = "None",
-			["Fly"] = "Nine",
-			["Minimaze Window"] = "None"
-		},
-		["Sliders"] = {
-			["Fly"] = 49.43994140625
-		},
-		["Toggles"] = {
-			["Blur"] = true,
-			["GodMode"] = true,
-			["Transparance"] = true,
-			["User info"] = false
-		},
-		["Inputs"] = {
-			["tse"] = "123"
-		}
-	}--]]
 
 	for _, tab in ipairs(self.mainTabs) do
 		for name, state in pairs(data.Toggles) do
-			if tab.Toggles[name] then
+			if tab.Toggles[name] and name ~= "Load Config" then
 				tab.Toggles[name]:SetState(state)
 			end
 		end
@@ -3467,6 +3440,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
