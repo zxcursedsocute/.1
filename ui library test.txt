@@ -1337,12 +1337,6 @@ function Library:AddTab(name,icon)
 		UICorner2.Parent = Frame2
 		UICorner_3.Parent = Frame
 
-		local function test(state)
-			if toggle.Callback then
-				toggle.Callback(state)
-			end
-		end
-
 		local toggleController = {
 			Value = toggle.Default,
 			UpdateVisuals = function(self, state)
@@ -1358,7 +1352,9 @@ function Library:AddTab(name,icon)
 				if state == self.Value then return end
 				self.Value = state
 				self:UpdateVisuals(state)
-				test(state)
+				if toggle.Callback then
+					task.spawn(toggle.Callback(state))
+				end
 			end,
 			GetState = function(self)
 				return self.Value
@@ -3020,6 +3016,7 @@ function Library:LoadConfig(filename)
 		for name, state in pairs(data.Toggles) do
 			if tab.Toggles[name] and name ~= "Load Config" then
 				tab.Toggles[name]:SetState(state)
+				 task.wait(0.01)
 			end
 		end
 
@@ -3443,5 +3440,6 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
