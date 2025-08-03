@@ -43,6 +43,8 @@ function Library.CreateWindow(title,subtitle,size)
 	self.AllToggles = {}
 	self.Windowscd = false
 	self.userinfo = true
+	self.saveFolder = nil
+	self.saveFileName = nil
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
@@ -3089,8 +3091,6 @@ function Library:LoadConfig(filename)
 
 	return true
 end
-self.saveFolder = nil
-self.saveFileName = nil
 
 function Library:SetSavePath(folder, filename)
     self.saveFolder = folder
@@ -3467,6 +3467,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
