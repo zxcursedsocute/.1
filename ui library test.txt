@@ -1353,7 +1353,9 @@ function Library:AddTab(name,icon)
 				self.Value = state
 				self:UpdateVisuals(state)
 				if toggle.Callback then
-					task.spawn(toggle.Callback(state))
+					task.spawn(function()
+						toggle.Callback(state)
+					end)
 				end
 			end,
 			GetState = function(self)
@@ -3440,6 +3442,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
