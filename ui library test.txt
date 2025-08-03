@@ -2809,7 +2809,9 @@ function Library:Destroy()
 	for _, toggle in ipairs(self.AllToggles) do
 		if toggle["controller"]["Value"] == true then
 			if toggle["callback"] then
-				toggle["callback"](false) 
+				task.spawn(function()
+					toggle["callback"](false) 
+				end)
 			end
 		end
 	end
@@ -3442,6 +3444,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
