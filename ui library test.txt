@@ -1337,6 +1337,12 @@ function Library:AddTab(name,icon)
 		UICorner2.Parent = Frame2
 		UICorner_3.Parent = Frame
 
+		local function test()
+			if toggle.Callback then
+				toggle.Callback(state)
+			end
+		end
+
 		local toggleController = {
 			Value = toggle.Default,
 			UpdateVisuals = function(self, state)
@@ -1352,10 +1358,7 @@ function Library:AddTab(name,icon)
 				if state == self.Value then return end
 				self.Value = state
 				self:UpdateVisuals(state)
-
-				if toggle.Callback then
-					toggle.Callback(state)
-				end
+				test()
 			end,
 			GetState = function(self)
 				return self.Value
@@ -3440,3 +3443,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
