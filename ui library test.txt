@@ -45,10 +45,14 @@ function Library.CreateWindow(title,subtitle,size)
 	self.userinfo = true
 	self.saveFolder = nil
 	self.saveFileName = nil
+	
+	self.OriginalTabElements = {} -- Для хранения оригинального расположения
+	self.CurrentSearchResults = {} -- Для хранения текущих результатов
+	self.IsSearching = false
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = Players.LocalPlayer.PlayerGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -394,42 +398,73 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Header.BorderSizePixel = 0
 	self.Header.Position = UDim2.new(0.0203390867, 0, 0.0250000004, 0)
 	self.Header.Size = UDim2.new(0, size - 24, 0, 40)
-	
-	local Search = Instance.new("Frame")
+
+	self.Search = Instance.new("Frame")
 	local SearchUICorner = Instance.new("UICorner")
-	local SearchImageLabel = Instance.new("ImageLabel")
-	local SearchTextBox = Instance.new("TextBox")
+	self.SearchImageLabel = Instance.new("ImageLabel")
+	self.SearchTextBox2 = Instance.new("TextBox")
 
-	Search.Parent = self.Header
-	Search.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-	Search.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	Search.BorderSizePixel = 0
-	Search.Position = UDim2.new(0.574973166, 0, 0.170000076, 0)
-	Search.Size = UDim2.new(0, 118, 0, 26)
+	self.SearchTextBox = self.SearchTextBox2
+	
+	self.SearchTextBox.Focused:Connect(function()
+		if self.SearchTextBox.Text == "Search..." then
+			self.SearchTextBox.Text = ""
+		end
+		self:Tween(self.Search,{Size = UDim2.new(0, 150,0, 28)},0.5)
+		self:Tween(self.Search,{Position = UDim2.new(0.52, 0, 0.13, 0)},0.5)
+		for i,v in pairs(self.CurrentTab["Elements"]) do
+			v.Visible = false
+		end
+		self.SearchTextBox2.TextSize = 15.000
+	end)
 
-	SearchUICorner.Parent = Search
+	self.SearchTextBox.FocusLost:Connect(function()
+		if self.SearchTextBox.Text == "" then
+			self.SearchTextBox2.TextSize = 14.000
+			self:Tween(self.Search,{Size = UDim2.new(0, 118, 0, 26)},1)
+			self:Tween(self.Search,{Position = UDim2.new(0.574973166, 0, 0.16, 0)},1)
+			self.SearchTextBox.Text = "Search..."
+			for i,v in pairs(self.CurrentTab["Elements"]) do
+				v.Visible = true
+			end
+		end
+	end)
 
-	SearchImageLabel.Parent = Search
-	SearchImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	SearchImageLabel.BackgroundTransparency = 1.000
-	SearchImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	SearchImageLabel.BorderSizePixel = 0
-	SearchImageLabel.Position = UDim2.new(0.813980877, 0, 0.192307696, 0)
-	SearchImageLabel.Size = UDim2.new(0, 16, 0, 16)
-	SearchImageLabel.Image = "rbxassetid://131200540387892"
+	self.SearchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
+		self:SearchAllTabs()
+	end)
 
-	SearchTextBox.Parent = Search
-	SearchTextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	SearchTextBox.BackgroundTransparency = 1.000
-	SearchTextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	SearchTextBox.BorderSizePixel = 0
-	SearchTextBox.Position = UDim2.new(0.04, 0, 0.115000002, -0.75)
-	SearchTextBox.Size = UDim2.new(0, 90, 0, 20)
-	SearchTextBox.Font = Enum.Font.SourceSans
-	SearchTextBox.Text = "Search..."
-	SearchTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-	SearchTextBox.TextSize = 14.000
-	SearchTextBox.TextXAlignment = Enum.TextXAlignment.Left
+	self.Search.Parent = self.Header
+	self.Search.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
+	self.Search.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	self.Search.BorderSizePixel = 0
+	self.Search.Position = UDim2.new(0.574973166, 0, 0.170000076, 0)
+	self.Search.Size = UDim2.new(0, 118, 0, 26)
+
+	SearchUICorner.Parent = self.Search
+
+	self.SearchImageLabel.Parent = self.Search
+	self.SearchImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	self.SearchImageLabel.BackgroundTransparency = 1.000
+	self.SearchImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	self.SearchImageLabel.BorderSizePixel = 0
+	self.SearchImageLabel.Position = UDim2.new(0.813980877, 0, 0.192307696, 0)
+	self.SearchImageLabel.Size = UDim2.new(0, 16, 0, 16)
+	self.SearchImageLabel.Image = "rbxassetid://131200540387892"
+
+	self.SearchTextBox2.Parent = self.Search
+	self.SearchTextBox2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	self.SearchTextBox2.BackgroundTransparency = 1.000
+	self.SearchTextBox2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	self.SearchTextBox2.BorderSizePixel = 0
+	self.SearchTextBox2.Position = UDim2.new(0.04, 0, 0.115000002, -0.9)
+	self.SearchTextBox2.Size = UDim2.new(0, 90, 0, 20)
+	self.SearchTextBox2.Font = Enum.Font.SourceSans
+	self.SearchTextBox2.Text = "Search..."
+	self.SearchTextBox2.Font = Enum.Font.FredokaOne
+	self.SearchTextBox2.TextColor3 = Color3.fromRGB(255, 255, 255)
+	self.SearchTextBox2.TextSize = 14.000
+	self.SearchTextBox2.TextXAlignment = Enum.TextXAlignment.Left
 
 	local function substr(str)
 		local strlen = string.len(str)
@@ -933,7 +968,8 @@ function Library:AddTab(name,icon)
 		Dropdowns = {},
 		Sliders = {},
 		ColorPickers = {},
-		Inputs = {}
+		Inputs = {},
+		SearchData = {}
 	}
 
 	local Frame_3 = Instance.new("TextButton")
@@ -1135,6 +1171,9 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Paragraph)
 		self.pos += 65
 		tab:CalcScroll()
+		
+		self.SearchData[Paragraph] = title .. " " .. subtitle .. " " .. secondsubtitle
+		table.insert(self.Elements, Paragraph)
 	end
 	function tab:AddSection(title)
 		local TextLabel = Instance.new("TextLabel")
@@ -1156,6 +1195,9 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, TextLabel)
 		self.pos += 26
 		tab:CalcScroll()
+		
+		self.SearchData[TextLabel] = title
+		table.insert(self.Elements, TextLabel)
 	end
 
 	function tab:AddButton(config)
@@ -1239,6 +1281,9 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Button)
 		self.pos += 50
 		tab:CalcScroll()
+		
+		self.SearchData[Button] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, Button)
 	end
 
 	function tab:AddToggle(config)
@@ -1381,8 +1426,13 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, Toggle)
 		self.pos += 50
 		tab:CalcScroll()
-		
+
 		tab.Toggles[config.Name] = toggleController
+		
+		self.SearchData[Toggle] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, Toggle)
+		
+		
 		return toggleController
 	end
 
@@ -1511,7 +1561,7 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, keybind)
 		self.pos += 50
 		tab:CalcScroll()
-		
+
 		local keybindObj = {
 			Name = config.Name,
 			Key = key,
@@ -1522,6 +1572,9 @@ function Library:AddTab(name,icon)
 			Callback = config.Callback
 		}
 		tab.Keybinds[config.Name] = keybindObj
+		
+		self.SearchData[keybind] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, keybind)
 		return keybindObj
 	end
 
@@ -1620,7 +1673,7 @@ function Library:AddTab(name,icon)
 				TextBox.Text = Input.Default
 			end
 		end)
-		
+
 		local function SetInput(Text2)
 			TextBox.Text = Text2
 			config.Callback(TextBox.Text)
@@ -1629,7 +1682,7 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, input)
 		self.pos += 50
 		tab:CalcScroll()
-		
+
 		local InputObj = {
 			Name = config.Name,
 			SetText = SetInput,
@@ -1640,6 +1693,9 @@ function Library:AddTab(name,icon)
 			Callback = config.Callback
 		}
 		tab.Inputs[config.Name] = InputObj
+		
+		self.SearchData[input] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, input)
 		return InputObj
 	end
 
@@ -1800,7 +1856,7 @@ function Library:AddTab(name,icon)
 		table.insert(self.Elements, slider)
 		self.pos += 50
 		tab:CalcScroll()
-		
+
 		local sliderObj = {
 			Name = config.Name,
 			Value = value,
@@ -1811,6 +1867,9 @@ function Library:AddTab(name,icon)
 		}
 
 		tab.Sliders[config.Name] = sliderObj
+		
+		self.SearchData[slider] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, slider)
 		return sliderObj
 	end
 
@@ -2171,8 +2230,11 @@ function Library:AddTab(name,icon)
 		function colorPickerObj:GetColor()
 			return currentColor
 		end
-		
+
 		tab.ColorPickers[config.Name] = colorPickerObj
+		
+		self.SearchData[ColorPick] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, ColorPick)
 
 		return colorPickerObj
 	end
@@ -2533,7 +2595,7 @@ function Library:AddTab(name,icon)
 		local function getvalue()
 			return dropdown.Selected
 		end
-		
+
 		local dropdownObj = {
 			Name = config.Name,
 			Value = config.Default,
@@ -2607,6 +2669,9 @@ function Library:AddTab(name,icon)
 		end
 
 		tab.Dropdowns[config.Name] = dropdownObj
+		
+		self.SearchData[Dropdown] = config.Name .. " " .. (config.Description or "")
+		table.insert(self.Elements, Dropdown)
 		return dropdownObj
 	end
 
@@ -2628,6 +2693,9 @@ function Library:SelectTab(tab, button)
 			self:Tween(t.Frame, {Size = UDim2.new(0, 2, 0, 0)}, 0.2)
 		end
 	end
+	
+	self.SearchTextBox.Text = "Search..."
+	self:ClearSearchResults()
 
 	if tab.Container then
 		tab.Container.Visible = true
@@ -2638,7 +2706,7 @@ function Library:SelectTab(tab, button)
 		self:Tween(tab.Frame, {BackgroundTransparency = 0}, 0.2)
 		self:Tween(tab.Frame, {Size = UDim2.new(0, 2, 0, 23)}, 0.2)
 	end
-
+	
 	self.CurrentTab = tab
 	self.TextLabel_5.Text = tab.Name
 end
@@ -2700,6 +2768,7 @@ function Library:ColumnWindow()
 	if self.Windowscd == false then
 		self.Windowscd = true
 		if self.Sections.Size ~= UDim2.new(0, 375,0, 370) then
+			self:ShowSearch()
 			self.Header.BackgroundTransparency = 1
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self.Frame_2.Visible = false
@@ -2787,17 +2856,18 @@ function Library:ColumnWindow()
 				self.Tabs.Size = UDim2.new(0, 185,0, 371)
 				self.ScrollingFrame.Size = UDim2.new(0, 185,0, 371)
 			end
+			self:ShowSearch()
 		end
 		self.Windowscd = false
 	end
 end
 
 function Library:Destroy()
-    if self.saveFolder and self.saveFileName then
-        pcall(function()
-            self:SaveConfig(self.saveFolder, self.saveFileName)
-        end)
-    end
+	if self.saveFolder and self.saveFileName then
+		pcall(function()
+			self:SaveConfig(self.saveFolder, self.saveFileName)
+		end)
+	end
 	for _, tab in ipairs(self.mainTabs) do
 		for _, connection in ipairs(tab.Connections) do
 			connection:Disconnect()
@@ -2815,6 +2885,7 @@ function Library:Destroy()
 			end
 		end
 	end
+	self:ClearSearchResults()
 	self.Destroy_gui.Visible = false
 	self.AllToggles = {}
 	self:BlurOff()
@@ -2956,7 +3027,7 @@ function Library:SaveConfig(foldername,filename)
 		for name, keybind in pairs(tab.Keybinds) do
 			config.Keybinds[name] = keybind:GetState()
 		end
-		
+
 		for name, Input in pairs(tab.Inputs) do
 			config.Inputs[name] = Input:GetState()
 		end
@@ -2978,7 +3049,7 @@ function Library:SaveConfig(foldername,filename)
 			}
 		end
 	end
-	
+
 	if not isfolder(foldername) then
 		makefolder(foldername)
 	end
@@ -2996,14 +3067,14 @@ function Library:IsLoadConfig(filename)
 	if not data.Toggles then
 		return
 	end
-for _, tab in ipairs(self.mainTabs) do
-	for name, state in pairs(data.Toggles) do
-		if tab.Toggles[name] and name == "Load Config" and state == true then
-			tab.Toggles[name]:SetState(state)
-			--self:LoadConfig(filename)
+	for _, tab in ipairs(self.mainTabs) do
+		for name, state in pairs(data.Toggles) do
+			if tab.Toggles[name] and name == "Load Config" and state == true then
+				tab.Toggles[name]:SetState(state)
+				--self:LoadConfig(filename)
+			end
 		end
 	end
-end
 
 end
 
@@ -3020,7 +3091,7 @@ function Library:LoadConfig(filename)
 		for name, state in pairs(data.Toggles) do
 			if tab.Toggles[name] and name ~= "Load Config" then
 				tab.Toggles[name]:SetState(state)
-				 task.wait(0.01)
+				task.wait(0.01)
 			end
 		end
 
@@ -3039,7 +3110,7 @@ function Library:LoadConfig(filename)
 				end
 			end
 		end
-		
+
 		for name, value in pairs(data.Inputs) do
 			if tab.Inputs[name] and tab.Inputs[name].SaveConfig == false then
 				tab.Inputs[name].SetText(value)
@@ -3070,8 +3141,118 @@ function Library:LoadConfig(filename)
 end
 
 function Library:SetSavePath(folder, filename)
-    self.saveFolder = folder
-    self.saveFileName = filename
+	self.saveFolder = folder
+	self.saveFileName = filename
+end
+
+function Library:SearchAllTabs()
+	local searchText = self.SearchTextBox.Text
+	if searchText == "Search..." then
+		searchText = ""
+	end
+
+	-- Сбрасываем предыдущие результаты
+	self:ClearSearchResults()
+
+	if searchText == "" then
+		self.IsSearching = false
+		return
+	end
+
+	self.IsSearching = true
+	local searchLower = string.lower(searchText)
+	local currentTab = self.CurrentTab
+	local foundElements = {}
+
+	-- Ищем по всем вкладкам
+	for _, tab in ipairs(self.mainTabs) do
+		for element, elementData in pairs(tab.SearchData) do
+			if string.find(string.lower(elementData), searchLower, 1, true) then
+				table.insert(foundElements, {
+					element = element,
+					originalTab = tab,
+					originalParent = element.Parent,
+					originalPosition = element.Position
+				})
+			end
+		end
+	end
+
+	-- Сортируем по вкладкам (сначала текущая)
+	table.sort(foundElements, function(a, b)
+		local aIsCurrent = a.originalTab == currentTab
+		local bIsCurrent = b.originalTab == currentTab
+
+		if aIsCurrent and not bIsCurrent then
+			return true
+		elseif not aIsCurrent and bIsCurrent then
+			return false
+		else
+			return a.originalTab.Name < b.originalTab.Name
+		end
+	end)
+
+	-- Перемещаем элементы в текущую вкладку
+	local container = currentTab.Container
+	local yOffset = 5
+	local positionStep = 50 -- Стандартная высота элемента
+
+	for i, result in ipairs(foundElements) do
+		local element = result.element
+
+		-- Сохраняем оригинальные свойства
+		self.OriginalTabElements[element] = {
+			Parent = element.Parent,
+			Position = element.Position,
+			Visible = element.Visible
+		}
+
+		-- Перемещаем элемент
+		element.Parent = container
+		element.Visible = true
+		element.Position = UDim2.new(0, 7, 0, yOffset)
+
+		-- Обновляем позицию для следующего элемента
+		yOffset = yOffset + positionStep
+
+		-- Сохраняем в текущих результатах
+		table.insert(self.CurrentSearchResults, element)
+	end
+
+	-- Обновляем размер контейнера
+	container.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+end
+
+function Library:ClearSearchResults()
+	if not self.IsSearching then return end
+
+	-- Восстанавливаем элементы в исходные позиции
+	for _, element in ipairs(self.CurrentSearchResults) do
+		local original = self.OriginalTabElements[element]
+		if original then
+			element.Parent = original.Parent
+			element.Position = original.Position
+			element.Visible = original.Visible
+		end
+	end
+
+	-- Очищаем временные данные
+	self.OriginalTabElements = {}
+	self.CurrentSearchResults = {}
+	self.IsSearching = false
+
+	-- Восстанавливаем размер контейнера текущей вкладки
+	if self.CurrentTab then
+		self.CurrentTab:CalcScroll()
+	end
+end
+
+function Library:ShowSearch()
+	if self.Search.Visible then
+		self.Search.Visible = false
+	else
+		self.Search.Visible = true
+	end	
 end
 
 function Library:SetTheme(themeName)
@@ -3337,6 +3518,14 @@ function Library:SetTheme(themeName)
 		end
 	end
 
+	if self.SearchImageLabel.Image == "rbxassetid://131200540387892" and themeName == "White" then
+		self.SearchImageLabel.Image = "rbxassetid://106057612152790"
+	elseif self.SearchImageLabel.Image == "rbxassetid://106057612152790" and themeName ~= "White" then
+		self.SearchImageLabel.Image = "rbxassetid://131200540387892"
+	end
+	self.Search.BackgroundColor3 =  self.Theme.dbtncolor
+	self.Search.BackgroundTransparency =  self.Theme.dbtntran
+	self.SearchTextBox2.TextColor3 = self.Theme.TextColor
 	self.ImageLabel.Image = self.Theme.BackGroundIcon
 	self.TextLabel.TextColor3 = self.Theme.TextColor
 	self.TextLabel_2.TextColor3 = self.Theme.SubTtitleTextColor
@@ -3444,8 +3633,3 @@ function Library:SetTheme(themeName)
 end
 
 return Library
-
-
-
-
-
