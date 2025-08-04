@@ -3088,12 +3088,6 @@ function Library:LoadConfig(filename)
 	if not success then return false end
 
 	for _, tab in ipairs(self.mainTabs) do
-		for name, state in pairs(data.Toggles) do
-			if tab.Toggles[name] and name ~= "Load Config" then
-				tab.Toggles[name]:SetState(state)
-				task.wait(0.01)
-			end
-		end
 
 		for name, keyStr in pairs(data.Keybinds) do
 			for _, tab in ipairs(self.mainTabs) do
@@ -3133,6 +3127,13 @@ function Library:LoadConfig(filename)
 			if tab.ColorPickers[name] then
 				local color = Color3.new(colorData.R, colorData.G, colorData.B)
 				tab.ColorPickers[name]:SetColor(color)
+			end
+		end
+
+		for name, state in pairs(data.Toggles) do
+			if tab.Toggles[name] and name ~= "Load Config" then
+				tab.Toggles[name]:SetState(state)
+				task.wait(0.01)
 			end
 		end
 	end
@@ -3633,3 +3634,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
