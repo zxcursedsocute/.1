@@ -2633,16 +2633,25 @@ function Library:AddTab(name,icon)
 				-- Обновление отображаемого текста
 				local displayText = ""
 				if self.Multi then
-					displayText = dropdown.Selected or "Select..."
-					local selectedList = {}
+				        if type(value) == "table" then
+				            dropdown.Selected = {}
+				            for option, selected in pairs(value) do
+				                if selected and table.find(self.Options, option) then
+				                    dropdown.Selected[option] = true
+				                end
+				            end
+					--displayText = dropdown.Selected or "Select..."
+					--[[local selectedList = {}
 					for option, selected in pairs(dropdown.Selected) do
 						if selected then
 							table.insert(selectedList, option)
 						end
 					end
 					displayText = table.concat(selectedList, ", ")
+					--]]
 					if #displayText > 20 then
 						displayText = displayText:sub(1, 17) .. "..."
+					end
 					end
 				else
 					displayText = dropdown.Selected or "Select..."
@@ -3112,11 +3121,30 @@ function Library:LoadConfig(filename)
 			end
 		end
 
-		for name, value in pairs(data.Dropdowns) do
+		--[[for name, value in pairs(data.Dropdowns) do
 			if tab.Dropdowns[name] then
 				tab.Dropdowns[name]:SetValue(value)
 			end
-		end
+		end--]]
+
+	        for name, value in pairs(data.Dropdowns) do
+	            if tab.Dropdowns[name] then
+	                -- Handle multi-select dictionary format
+	                if tab.Dropdowns[name].Multi and type(value) == "table" then
+	                    local fixedValue = {}
+	                    for k, v in pairs(value) do
+	                        if type(k) == "string" then  -- Dictionary format
+	                            fixedValue[k] = v
+	                        else  -- Array format
+	                            fixedValue[v] = true
+	                        end
+	                    end
+	                    tab.Dropdowns[name]:SetValue(fixedValue)
+	                else
+	                    tab.Dropdowns[name]:SetValue(value)
+	                end
+	            end
+	        end
 
 		for name, value in pairs(data.Sliders) do
 			if tab.Sliders[name] then
@@ -3635,6 +3663,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
