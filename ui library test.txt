@@ -2639,8 +2639,8 @@ function Library:AddTab(name,icon)
 						if selected then
 							table.insert(selectedList, option)
 						end
-					end--]]
-					displayText = table.concat(selectedList, ", ")
+					end
+					displayText = table.concat(selectedList, ", ")--]]
 					if #displayText > 20 then
 						displayText = displayText:sub(1, 17) .. "..."
 					end
@@ -3635,6 +3635,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
