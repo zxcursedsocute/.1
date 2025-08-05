@@ -2633,12 +2633,13 @@ function Library:AddTab(name,icon)
 				-- Обновление отображаемого текста
 				local displayText = ""
 				if self.Multi then
-					local selectedList = {}
+					displayText = dropdown.Selected or "Select..."
+					--[[local selectedList = {}
 					for option, selected in pairs(dropdown.Selected) do
 						if selected then
 							table.insert(selectedList, option)
 						end
-					end
+					end--]]
 					displayText = table.concat(selectedList, ", ")
 					if #displayText > 20 then
 						displayText = displayText:sub(1, 17) .. "..."
@@ -2650,7 +2651,7 @@ function Library:AddTab(name,icon)
 					end
 				end
 
-				TextLabel.Text = "123"
+				TextLabel.Text = displayText
 
 				-- Вызов колбэка
 				if config.Callback then
@@ -3634,6 +3635,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
