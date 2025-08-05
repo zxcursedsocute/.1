@@ -2634,7 +2634,6 @@ function Library:AddTab(name,icon)
 				local displayText = ""
 				if self.Multi then
 					displayText = dropdown.Selected or "Select..."
-					--[[
 					local selectedList = {}
 					for option, selected in pairs(dropdown.Selected) do
 						if selected then
@@ -2642,10 +2641,6 @@ function Library:AddTab(name,icon)
 						end
 					end
 					displayText = table.concat(selectedList, ", ")
-					--]]
-for i,v in pairs(displayText)
-print(i,v)
-end
 					if #displayText > 20 then
 						displayText = displayText:sub(1, 17) .. "..."
 					end
@@ -3640,6 +3635,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
