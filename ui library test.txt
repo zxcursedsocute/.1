@@ -2643,6 +2643,7 @@ function Library:AddTab(name,icon)
 					end
 					displayText = table.concat(selectedList, ", ")
 					--]]
+print(displayText)
 					if #displayText > 20 then
 						displayText = displayText:sub(1, 17) .. "..."
 					end
@@ -3637,6 +3638,7 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
 
 
 
