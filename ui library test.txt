@@ -1035,9 +1035,11 @@ function Library:AddTab(name,icon)
 		icon = "rbxassetid://109675987433260"
 	elseif icon == "Items" then
 		icon = "rbxassetid://104651616243172"
+	elseif icon == "Teleport" then
+		icon = "rbxassetid://78108225641992"
+	elseif icon == "Badge" then
+		icon = "rbxassetid://80456866422285"
 	end
-
-
 
 	TextLabel_3.Parent = Frame_3
 	TextLabel_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -3625,7 +3627,16 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://90198470195102"
 		elseif v.Tab[4].Image == "rbxassetid://90198470195102" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://104651616243172"
+		elseif v.Tab[4].Image == "rbxassetid://78108225641992" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://132348897189260"
+		elseif v.Tab[4].Image == "rbxassetid://132348897189260" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://78108225641992"
+		elseif v.Tab[4].Image == "rbxassetid://80456866422285" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://85882665968234"
+		elseif v.Tab[4].Image == "rbxassetid://85882665968234" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://80456866422285"
 		end
+		
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
 		for i2,v2 in pairs(v.ElemBtn) do
