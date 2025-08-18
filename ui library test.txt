@@ -640,7 +640,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.wTextLabel.BackgroundTransparency = 1.000
 	self.wTextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.wTextLabel.BorderSizePixel = 0
-	self.wTextLabel.Position = UDim2.new(0.250195563, 0, 0, 7)
+	self.wTextLabel.Position = UDim2.new(0.23, 0, 0, 7)
 	self.wTextLabel.Size = UDim2.new(0, 131, 0, 15)
 	self.wTextLabel.Font = Enum.Font.FredokaOne
 	self.wTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -653,7 +653,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.wTextLabel_2.BackgroundTransparency = 1.000
 	self.wTextLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.wTextLabel_2.BorderSizePixel = 0
-	self.wTextLabel_2.Position = UDim2.new(0.250195563, 0, 0, 22)
+	self.wTextLabel_2.Position = UDim2.new(0.23, 0, 0, 21)
 	self.wTextLabel_2.Size = UDim2.new(0, 131, 0, 15)
 	self.wTextLabel_2.Font = Enum.Font.FredokaOne
 	self.wTextLabel_2.TextColor3 = Color3.fromRGB(171, 171, 171)
@@ -3700,3 +3700,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
