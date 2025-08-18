@@ -45,14 +45,15 @@ function Library.CreateWindow(title,subtitle,size)
 	self.userinfo = true
 	self.saveFolder = nil
 	self.saveFileName = nil
+	self.ActiveNotifications = {}
 
-	self.OriginalTabElements = {} -- Для хранения оригинального расположения
-	self.CurrentSearchResults = {} -- Для хранения текущих результатов
+	self.OriginalTabElements = {}
+	self.CurrentSearchResults = {}
 	self.IsSearching = false
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = Players.LocalPlayer.PlayerGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -525,8 +526,8 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Frame.BackgroundTransparency = self.Theme.headerlinetrans
 	self.Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.Frame.BorderSizePixel = 0
-	self.Frame.Position = UDim2.new(0, 0, 1, 0)
-	self.Frame.Size = UDim2.new(0, 566, 0, 1)
+	self.Frame.Position = UDim2.new(0, -1, 1, 0)
+	self.Frame.Size = UDim2.new(0, 568, 0, 1)
 
 	self.close = Instance.new("ImageButton")
 	self.close.Name = "close"
@@ -605,7 +606,8 @@ function Library.CreateWindow(title,subtitle,size)
 	Frame_2.BackgroundTransparency = 0.550
 	Frame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Frame_2.BorderSizePixel = 0
-	Frame_2.Size = UDim2.new(0, 185, 0, 1)
+	Frame_2.Position = UDim2.new(0, -1, 0, 0)
+	Frame_2.Size = UDim2.new(0, 186, 0, 1)
 
 	local Players2 = game:GetService("Players")
 	local userimg = ''
@@ -638,7 +640,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.wTextLabel.BackgroundTransparency = 1.000
 	self.wTextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.wTextLabel.BorderSizePixel = 0
-	self.wTextLabel.Position = UDim2.new(0.250195563, 0, 0.156171337, 0)
+	self.wTextLabel.Position = UDim2.new(0.250195563, 0, 0, 7)
 	self.wTextLabel.Size = UDim2.new(0, 131, 0, 15)
 	self.wTextLabel.Font = Enum.Font.FredokaOne
 	self.wTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -651,7 +653,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.wTextLabel_2.BackgroundTransparency = 1.000
 	self.wTextLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.wTextLabel_2.BorderSizePixel = 0
-	self.wTextLabel_2.Position = UDim2.new(0.250195563, 0, 0.489504665, 0)
+	self.wTextLabel_2.Position = UDim2.new(0.250195563, 0, 0, 22)
 	self.wTextLabel_2.Size = UDim2.new(0, 131, 0, 15)
 	self.wTextLabel_2.Font = Enum.Font.FredokaOne
 	self.wTextLabel_2.TextColor3 = Color3.fromRGB(171, 171, 171)
@@ -665,7 +667,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.Frame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	self.Frame_2.BorderSizePixel = 0
 	self.Frame_2.Position = UDim2.new(1, 0, 0, 0)
-	self.Frame_2.Size = UDim2.new(0, 1, 0, 414)
+	self.Frame_2.Size = UDim2.new(0, 1, 0, 416)
 
 	self.ScrollingFrame.Parent = self.Tabs
 	self.ScrollingFrame.Active = true
@@ -728,7 +730,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 		local img
 		if noti.type == 'Notification' then
-			img = "rbxassetid://83464096194873"
+			img = "rbxassetid://75930996983661"
 		elseif noti.type == 'Warn' then
 			img = "rbxassetid://85045950898455"
 		elseif noti.type == 'Error' then
@@ -1116,11 +1118,11 @@ function Library:AddTab(name,icon)
 		table.insert(tab.Textsubtitle, subtext)
 		local secondsubtext = Instance.new("TextLabel")
 		table.insert(tab.Textsubtitle, secondsubtext)
-		
+
 		local size = 60
 		local namepos = 4
 		local titlepos = 24
-		
+
 		if secondsubtitle == "" then
 			size = 45
 			titlepos = 24
@@ -2794,7 +2796,7 @@ function Library:ColumnWindow()
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self.Frame_2.Visible = false
 			self:Tween(self.ImageLabel, {Size = UDim2.new(0, 395,0, 480)}, 1)
-			self:Tween(self.Frame, {Size = UDim2.new(0, 375,0, 1)}, 1)
+			self:Tween(self.Frame, {Size = UDim2.new(0, 381,0, 1)}, 1)
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.WindowUser.Visible = false
@@ -2838,7 +2840,7 @@ function Library:ColumnWindow()
 			self.Header.BackgroundTransparency = 1
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self:Tween(self.ImageLabel, {Size = UDim2.new(0, 590,0, 480)}, 1)
-			self:Tween(self.Frame, {Size = UDim2.new(0, 566,0, 1)}, 1)
+			self:Tween(self.Frame, {Size = UDim2.new(0, 568,0, 1)}, 1)
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.Frame_2.Visible = true
@@ -3312,6 +3314,7 @@ function Library:SetTheme(themeName)
 			TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 			NotiCloseImg = "rbxassetid://134899599114088",
 			NotiImg = "rbxassetid://97146547138190",
+			NotiCollImg = "rbxassetid://75930996983661",
 			NotiTitleColor = Color3.fromRGB(255, 255, 255),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(22, 22, 22),
@@ -3356,6 +3359,7 @@ function Library:SetTheme(themeName)
 			TabsScrollingBarFrameColor = Color3.fromRGB(0, 0, 0),
 			NotiCloseImg = "rbxassetid://118159983720285",
 			NotiImg = "rbxassetid://79134154162988",
+			NotiCollImg = "rbxassetid://76158273611595",
 			NotiTitleColor = Color3.fromRGB(0, 0, 0),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(255, 255, 255),
@@ -3398,6 +3402,7 @@ function Library:SetTheme(themeName)
 			TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 			NotiCloseImg = "rbxassetid://134899599114088",
 			NotiImg = "rbxassetid://78799487177198",
+			NotiCollImg = "rbxassetid://75930996983661",
 			NotiTitleColor = Color3.fromRGB(255, 255, 255),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(21, 107, 132),
@@ -3441,7 +3446,8 @@ function Library:SetTheme(themeName)
 			headerlinetrans = 0.550,
 			TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 			NotiCloseImg = "rbxassetid://134899599114088",
-			NotiImg = "rbxassetid://89937485741870",
+			NotiImg = "rbxassetid://80073397457305",
+			NotiCollImg = "rbxassetid://75930996983661",
 			NotiTitleColor = Color3.fromRGB(255, 255, 255),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(3, 61, 0),
@@ -3485,7 +3491,8 @@ function Library:SetTheme(themeName)
 			headerlinetrans = 0.550,
 			TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 			NotiCloseImg = "rbxassetid://134899599114088",
-			NotiImg = "rbxassetid://74670242216855",
+			NotiImg = "rbxassetid://139941915808537",
+			NotiCollImg = "rbxassetid://75930996983661",
 			NotiTitleColor = Color3.fromRGB(255, 255, 255),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(0, 0, 0),
@@ -3528,6 +3535,7 @@ function Library:SetTheme(themeName)
 			TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 			NotiCloseImg = "rbxassetid://134899599114088",
 			NotiImg = "rbxassetid://97146547138190",
+			NotiCollImg = "rbxassetid://75930996983661",
 			NotiTitleColor = Color3.fromRGB(255, 255, 255),
 			BackGroundTran = 0.05,
 			DestroyGFrame = Color3.fromRGB(22, 22, 22),
@@ -3556,6 +3564,15 @@ function Library:SetTheme(themeName)
 				Sliderball = Color3.fromRGB(255, 255, 255),
 				ColorPickerColoro = Color3.fromRGB(47, 47, 47)
 			}
+		end
+	end
+
+	for i, v in pairs(self["ActiveNotifications"]) do
+		v["notification"].Image = self.Theme.NotiImg
+		v["notification"].Title.TextColor3 = self.Theme.TextColor
+		v["notification"].Description.TextColor3 = self.Theme.SubTtitleTextColor
+		if v["notification"].Icon.Image == "rbxassetid://75930996983661" or v["notification"].Icon.Image == "rbxassetid://76158273611595" then
+			v["notification"].Icon.Image = self.Theme.NotiCollImg
 		end
 	end
 
@@ -3636,7 +3653,7 @@ function Library:SetTheme(themeName)
 		elseif v.Tab[4].Image == "rbxassetid://85882665968234" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://80456866422285"
 		end
-		
+
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
 		for i2,v2 in pairs(v.ElemBtn) do
@@ -3683,4 +3700,3 @@ function Library:SetTheme(themeName)
 end
 
 return Library
-
