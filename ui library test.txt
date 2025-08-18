@@ -1,3 +1,4 @@
+
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -411,8 +412,8 @@ function Library.CreateWindow(title,subtitle,size)
 		if self.SearchTextBox.Text == "Search..." then
 			self.SearchTextBox.Text = ""
 		end
-		self:Tween(self.Search,{Size = UDim2.new(0, 150,0, 28)},0.5)
-		self:Tween(self.Search,{Position = UDim2.new(0.52, 0, 0.13, 0)},0.5)
+		--self:Tween(self.Search,{Size = UDim2.new(0, 150,0, 28)},0.5)
+		--self:Tween(self.Search,{Position = UDim2.new(0.52, 0, 0.13, 0)},0.5)
 		for i,v in pairs(self.CurrentTab["Elements"]) do
 			v.Visible = false
 		end
@@ -422,8 +423,8 @@ function Library.CreateWindow(title,subtitle,size)
 	self.SearchTextBox.FocusLost:Connect(function()
 		if self.SearchTextBox.Text == "" then
 			self.SearchTextBox2.TextSize = 14.000
-			self:Tween(self.Search,{Size = UDim2.new(0, 118, 0, 26)},1)
-			self:Tween(self.Search,{Position = UDim2.new(0.574973166, 0, 0.16, 0)},1)
+			--self:Tween(self.Search,{Size = UDim2.new(0, 118, 0, 26)},1)
+			--self:Tween(self.Search,{Position = UDim2.new(0.574973166, 0, 0.16, 0)},1)
 			self.SearchTextBox.Text = "Search..."
 			for i,v in pairs(self.CurrentTab["Elements"]) do
 				v.Visible = true
@@ -539,8 +540,17 @@ function Library.CreateWindow(title,subtitle,size)
 	self.close.Position = UDim2.new(0.949999988, 0, -28, 0)
 	self.close.Size = UDim2.new(0, 15, 0, 15)
 	self.close.Image = self.Theme.HeaderCloseIcon
+	
+	local btnclose = Instance.new("TextButton")
+	btnclose.Parent = self.close
+	btnclose.Size = UDim2.new(0, 20, 0, 20)
+	btnclose.Text = ""
+	btnclose.Transparency = 1
+	btnclose.Position = UDim2.new(0, -2.9 , 0, -2.5)
+	
+	local btnclose3 = Instance.new("TextButton")
 
-	self.close.MouseButton1Click:Connect(function()
+	btnclose.MouseButton1Click:Connect(function()
 		self:ShowDestroyQ()
 	end)
 
@@ -553,8 +563,15 @@ function Library.CreateWindow(title,subtitle,size)
 	self.ImageButton.Position = UDim2.new(0.879999995, 0, -26, 0)
 	self.ImageButton.Size = UDim2.new(0, 16, 0, 12)
 	self.ImageButton.Image = self.Theme.HeaderMiniIcon
+	
+	local btnclose2 = Instance.new("TextButton")
+	btnclose2.Parent = self.ImageButton
+	btnclose2.Size = UDim2.new(0, 20, 0, 20)
+	btnclose2.Text = ""
+	btnclose2.Transparency = 1
+	btnclose2.Position = UDim2.new(0, -2.9 , 0, -4)
 
-	self.ImageButton.MouseButton1Click:Connect(function()
+	btnclose2.MouseButton1Click:Connect(function()
 		self:ColumnWindow()
 	end)
 
@@ -566,8 +583,15 @@ function Library.CreateWindow(title,subtitle,size)
 	self.ImageButton_2.Position = UDim2.new(0.810000002, 0, -21, 0)
 	self.ImageButton_2.Size = UDim2.new(0, 18, 0, 2)
 	self.ImageButton_2.Image = self.Theme.HeaderMinimazeIcon
+	
+	local btnclose3 = Instance.new("TextButton")
+	btnclose3.Parent = self.ImageButton_2
+	btnclose3.Size = UDim2.new(0, 22, 0, 20)
+	btnclose3.Text = ""
+	btnclose3.Transparency = 1
+	btnclose3.Position = UDim2.new(0, -2 , 0, -9)
 
-	self.ImageButton_2.MouseButton1Click:Connect(function()
+	btnclose3.MouseButton1Click:Connect(function()
 		self:Minimaze()
 	end)
 
@@ -1835,6 +1859,7 @@ function Library:AddTab(name,icon)
 		underline.Size = UDim2.new(0, 0, 0, 2)
 
 		local dragging = false
+		local startInput = nil
 
 		local function updateValue(newValue)
 			value = math.clamp(newValue, Slider.min, Slider.max)
@@ -1849,20 +1874,49 @@ function Library:AddTab(name,icon)
 		end
 
 		sliderbutton.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+				input.UserInputType == Enum.UserInputType.Touch then
 				dragging = true
-			end
-		end)
+				startInput = input
 
-		sliderbutton.InputEnded:Connect(function()
-			dragging = false
-		end)
-
-		sliderbutton.InputChanged:Connect(function(input)
-			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 				local pos = input.Position.X - sliderbutton.AbsolutePosition.X
 				local percent = math.clamp(pos / sliderbutton.AbsoluteSize.X, 0, 1)
 				updateValue(Slider.min + percent * (Slider.max - Slider.min))
+			end
+		end)
+
+		sliderbutton.InputEnded:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.MouseButton1 and startInput and startInput.UserInputType == Enum.UserInputType.MouseButton1) or
+				(input.UserInputType == Enum.UserInputType.Touch and startInput and startInput.UserInputType == Enum.UserInputType.Touch and input.UserInputId == startInput.UserInputId) then
+				dragging = false
+				startInput = nil
+			end
+		end)
+
+		sliderbutton.InputChanged:Connect(function(input)
+			if dragging and startInput then
+				local validInput = false
+
+				if input.UserInputType == Enum.UserInputType.MouseMovement and 
+					startInput.UserInputType == Enum.UserInputType.MouseButton1 then
+					validInput = true
+				elseif input.UserInputType == Enum.UserInputType.Touch and 
+					startInput.UserInputType == Enum.UserInputType.Touch and 
+					input.UserInputId == startInput.UserInputId then
+					validInput = true
+				end
+
+				if validInput then
+					local pos
+					if input.UserInputType == Enum.UserInputType.Touch then
+						pos = input.Position.X - sliderbutton.AbsolutePosition.X
+					else
+						pos = input.Position.X - sliderbutton.AbsolutePosition.X
+					end
+
+					local percent = math.clamp(pos / sliderbutton.AbsoluteSize.X, 0, 1)
+					updateValue(Slider.min + percent * (Slider.max - Slider.min))
+				end
 			end
 		end)
 
