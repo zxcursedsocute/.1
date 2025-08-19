@@ -53,7 +53,7 @@ function Library.CreateWindow(title,subtitle,size)
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = Players.LocalPlayer.PlayerGui
+	self.UI.Parent = CoreGui
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -3753,3 +3753,4 @@ function Library:SetTheme(themeName)
 end
 
 return Library
+
