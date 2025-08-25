@@ -539,14 +539,14 @@ function Library.CreateWindow(title,subtitle,size)
 	self.close.Position = UDim2.new(0.949999988, 0, -28, 0)
 	self.close.Size = UDim2.new(0, 15, 0, 15)
 	self.close.Image = self.Theme.HeaderCloseIcon
-	
+
 	local btnclose = Instance.new("TextButton")
 	btnclose.Parent = self.close
 	btnclose.Size = UDim2.new(0, 20, 0, 20)
 	btnclose.Text = ""
 	btnclose.Transparency = 1
 	btnclose.Position = UDim2.new(0, -2.9 , 0, -2.5)
-	
+
 	local btnclose3 = Instance.new("TextButton")
 
 	btnclose.MouseButton1Click:Connect(function()
@@ -562,7 +562,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.ImageButton.Position = UDim2.new(0.879999995, 0, -26, 0)
 	self.ImageButton.Size = UDim2.new(0, 16, 0, 12)
 	self.ImageButton.Image = self.Theme.HeaderMiniIcon
-	
+
 	local btnclose2 = Instance.new("TextButton")
 	btnclose2.Parent = self.ImageButton
 	btnclose2.Size = UDim2.new(0, 20, 0, 20)
@@ -582,7 +582,7 @@ function Library.CreateWindow(title,subtitle,size)
 	self.ImageButton_2.Position = UDim2.new(0.810000002, 0, -21, 0)
 	self.ImageButton_2.Size = UDim2.new(0, 18, 0, 2)
 	self.ImageButton_2.Image = self.Theme.HeaderMinimazeIcon
-	
+
 	local btnclose3 = Instance.new("TextButton")
 	btnclose3.Parent = self.ImageButton_2
 	btnclose3.Size = UDim2.new(0, 22, 0, 20)
@@ -2401,7 +2401,7 @@ function Library:AddTab(name,icon)
 		TextLabel.Position = UDim2.new(0.038557943, 0, -0.0200012214, 0)
 		TextLabel.Size = UDim2.new(0, 88, 0, 30)
 		TextLabel.Font = Enum.Font.FredokaOne
-		TextLabel.Text = dropdown.Default or "Select..."
+		TextLabel.Text = "Select..."
 		table.insert(tab.Texttitle, TextLabel)
 		TextLabel.TextColor3 = self.Theme.TextColor
 		TextLabel.TextSize = 14.000
@@ -2578,7 +2578,6 @@ function Library:AddTab(name,icon)
 						end
 						return str
 					end
-
 					TextLabel.Text = selectedText == "" and "Select..." or smart_line_break(selectedText)
 				else
 					local result = ""
@@ -2669,19 +2668,16 @@ function Library:AddTab(name,icon)
 			Multi = config.Multi,
 			GetValue = getvalue,
 			SetValue = function(self, value)
-				-- Обработка мультивыбора
 				if self.Multi then
-					-- Если передана таблица значений
+					dropdown.Selected = {}
+
 					if type(value) == "table" then
-						dropdown.Selected = {}
-						for _, option in ipairs(value) do
-							if table.find(self.Options, option) then
+						for option, selected in pairs(value) do
+							if selected and table.find(self.Options, option) then
 								dropdown.Selected[option] = true
 							end
 						end
-						-- Если передана строка (для совместимости)
 					elseif type(value) == "string" then
-						dropdown.Selected = {}
 						for option in string.gmatch(value, "([^,]+)") do
 							option = option:gsub("^%s*(.-)%s*$", "%1")
 							if table.find(self.Options, option) then
@@ -2689,46 +2685,75 @@ function Library:AddTab(name,icon)
 							end
 						end
 					end
-				else
-					-- Одиночный выбор
-					if table.find(self.Options, value) then
-						dropdown.Selected = value
-					end
-				end
 
-				-- Обновление отображаемого текста
-				local displayText = ""
-				if self.Multi then
-					if type(value) == "table" then
-						dropdown.Selected = {}
-						for option, selected in pairs(value) do
-							if selected and table.find(self.Options, option) then
-								dropdown.Selected[option] = true
-							end
-						end
-						--displayText = dropdown.Selected or "Select..."
-					--[[local selectedList = {}
+					local selectedList = {}
 					for option, selected in pairs(dropdown.Selected) do
 						if selected then
 							table.insert(selectedList, option)
 						end
 					end
-					displayText = table.concat(selectedList, ", ")
-					--]]
+
+					local displayText = table.concat(selectedList, ", ")
+
+					if displayText == "" then
+						TextLabel.Text = dropdown.Default
+					else
 						if #displayText > 20 then
 							displayText = displayText:sub(1, 17) .. "..."
 						end
+						TextLabel.Text = displayText
 					end
+					local selectedText = ""
+					for opt, sel in pairs(dropdown.Selected) do
+						if sel then
+							selectedText = selectedText .. (selectedText == "" and opt or "," .. opt)
+						end
+					end
+
+					local function smart_line_break(str)
+						local visible_count = 0
+						local last_visible_pos = 0
+
+						for i = 1, #str do
+							local c = str:sub(i, i)
+							if c ~= " " and c ~= "," then
+								visible_count = visible_count + 1
+								last_visible_pos = i
+							end
+
+							if visible_count >= 14 then
+								local break_pos = i
+								for j = i + 1, #str do
+									local next_char = str:sub(j, j)
+									if next_char ~= " " and next_char ~= "," then
+										break
+									end
+									break_pos = j
+								end
+								if #str >= 28 then
+									str = str:sub(1, 28) .. "..."
+								end
+								return str:sub(1, break_pos) .. "\n" .. str:sub(break_pos + 1)
+							end
+						end
+
+						if #str >= 28 then
+							str = str:sub(1, 28) .. "..."
+						end
+						return str
+					end
+					TextLabel.Text = selectedText == "" and "Select..." or smart_line_break(selectedText)
 				else
-					displayText = dropdown.Selected or "Select..."
-					if #displayText > 20 then
-						displayText = displayText:sub(1, 17) .. "..."
+					if table.find(self.Options, value) then
+						dropdown.Selected = value
+						local displayText = value
+						if #displayText > 20 then
+							displayText = displayText:sub(1, 17) .. "..."
+						end
+						TextLabel.Text = displayText
 					end
 				end
 
-				TextLabel.Text = displayText
-
-				-- Вызов колбэка
 				if config.Callback then
 					if self.Multi then
 						config.Callback(dropdown.Selected)
@@ -2737,9 +2762,8 @@ function Library:AddTab(name,icon)
 					end
 				end
 			end
-		}
+			}
 
-		-- Инициализация начального значения
 		if config.Default then
 			dropdownObj:SetValue(config.Default)
 		end
@@ -3753,4 +3777,3 @@ function Library:SetTheme(themeName)
 end
 
 return Library
-
