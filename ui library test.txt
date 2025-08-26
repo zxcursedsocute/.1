@@ -30,12 +30,14 @@ function Library.CreateWindow(title,subtitle,size)
 		TabsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 		NotiCloseImg = "rbxassetid://134899599114088",
 		NotiImg = "rbxassetid://97146547138190",
+		NotiCollImg = "rbxassetid://75930996983661",
 		NotiTitleColor = Color3.fromRGB(255, 255, 255),
 		BackGroundTran = 0.05,
 		DestroyGFrame = Color3.fromRGB(22, 22, 22),
 		dbtntran = 0.95,
 		dbtncolor = Color3.fromRGB(255, 255, 255)
 	}
+	self.ScrollingFrameCanvasSize = 0
 	self.Noti = {}
 	self.BlurEffect = nil
 	self.Connections = {}
@@ -50,10 +52,15 @@ function Library.CreateWindow(title,subtitle,size)
 	self.OriginalTabElements = {}
 	self.CurrentSearchResults = {}
 	self.IsSearching = false
+	
+	local randomFolderName = math.random(10000, 99999) .. "_" .. os.time()
+	self.RandomContainer = Instance.new("Folder")
+	self.RandomContainer.Name = randomFolderName
+	self.RandomContainer.Parent = CoreGui:FindFirstChild("RobloxGui")
 
 	self.UI = Instance.new("ScreenGui")
 	self.UI.Name = "RobloxGui"
-	self.UI.Parent = CoreGui
+	self.UI.Parent = self.RandomContainer
 	self.UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	self.ImageLabel = Instance.new("ImageLabel")
@@ -753,7 +760,11 @@ function Library.CreateWindow(title,subtitle,size)
 
 		local img
 		if noti.type == 'Notification' then
-			img = "rbxassetid://75930996983661"
+			if self.Theme.NotiCollImg == "rbxassetid://76158273611595" then
+				img = "rbxassetid://76158273611595"
+			else
+				img = "rbxassetid://75930996983661"
+			end
 		elseif noti.type == 'Warn' then
 			img = "rbxassetid://85045950898455"
 		elseif noti.type == 'Error' then
@@ -1064,8 +1075,10 @@ function Library:AddTab(name,icon)
 		icon = "rbxassetid://78108225641992"
 	elseif icon == "Badge" then
 		icon = "rbxassetid://80456866422285"
+	elseif icon == "Quests" then
+		icon = "rbxassetid://88588775334975"
 	end
-
+	
 	TextLabel_3.Parent = Frame_3
 	TextLabel_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	TextLabel_3.BackgroundTransparency = 1.000
@@ -1143,7 +1156,7 @@ function Library:AddTab(name,icon)
 		table.insert(tab.Textsubtitle, secondsubtext)
 
 		local size = 60
-		local namepos = 4
+		local namepos = 3
 		local titlepos = 24
 
 		if secondsubtitle == "" then
@@ -1205,7 +1218,7 @@ function Library:AddTab(name,icon)
 		secondsubtext.TextXAlignment = Enum.TextXAlignment.Left
 
 		table.insert(self.Elements, Paragraph)
-		self.pos += 65
+		self.pos += size + 5
 		tab:CalcScroll()
 
 		self.SearchData[Paragraph] = title .. " " .. subtitle .. " " .. secondsubtitle
@@ -1232,7 +1245,7 @@ function Library:AddTab(name,icon)
 		self.pos += 26
 		tab:CalcScroll()
 
-		self.SearchData[TextLabel] = title
+		--self.SearchData[TextLabel] = title
 		table.insert(self.Elements, TextLabel)
 	end
 
@@ -2762,7 +2775,7 @@ function Library:AddTab(name,icon)
 					end
 				end
 			end
-			}
+		}
 
 		if config.Default then
 			dropdownObj:SetValue(config.Default)
@@ -2776,6 +2789,8 @@ function Library:AddTab(name,icon)
 	end
 
 	self.ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, self.tabpos + 2)
+	
+	self.ScrollingFrameCanvasSize = UDim2.new(0, 0, 0, self.tabpos + 2)
 
 	return tab
 end
@@ -2837,7 +2852,7 @@ function Library:Minimaze()
 			self.Sections.Visible = false
 			if self.Sections.Size == UDim2.new(0, 375,0, 370) then
 				self:Tween(self.ImageLabel,{Size = UDim2.new(0, 395,0, 40)},1)
-				self:Tween(self.Header,{Size = UDim2.new(0, 375,0, 40)},0)
+				self:Tween(self.Header,{Size = UDim2.new(0, 380,0, 40)},0)
 			else
 				self:Tween(self.ImageLabel,{Size = UDim2.new(0, 590, 0, 40)},1)
 				self.Header.Size = UDim2.new(0, 590 - 24, 0, 40)
@@ -2850,7 +2865,7 @@ function Library:Minimaze()
 			self.Header.BackgroundTransparency = 1
 			if self.Sections.Size == UDim2.new(0, 375,0, 370) then
 				self:Tween(self.ImageLabel,{Size = UDim2.new(0, 395,0, 480)},1)
-				self:Tween(self.Header,{Size = UDim2.new(0, 375,0, 40)},1)
+				self:Tween(self.Header,{Size = UDim2.new(0, 380,0, 40)},1)
 			else
 				self:Tween(self.ImageLabel,{Size = UDim2.new(0, 590, 0, 480)},1)
 			end
@@ -2872,18 +2887,22 @@ function Library:ColumnWindow()
 			self.Header.BackgroundTransparency = 1
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self.Frame_2.Visible = false
+			self:Tween(self.close, {Position = UDim2.new(0.94, 0,-28, 0)}, 1)
+			self:Tween(self.ImageButton, {Position = UDim2.new(0.854, 0,-26, 0)}, 1)
+			self:Tween(self.ImageButton_2, {Position = UDim2.new(0.76, 0,-21, 0)}, 1)
 			self:Tween(self.ImageLabel, {Size = UDim2.new(0, 395,0, 480)}, 1)
 			self:Tween(self.Frame, {Size = UDim2.new(0, 381,0, 1)}, 1)
+			self:Tween(self.Header, {Size = UDim2.new(0, 381,0, 40)}, 1)
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.WindowUser.Visible = false
 			self.Sections.Size = UDim2.new(0, 375,0, 370)
 			self.Sections.Position = UDim2.new(0.02, 0,0.201, 0)
 			self.Frame_7.Size = UDim2.new(0, 375,0, 370)
-			self.Frame_7.Position = UDim2.new(0, 0,0, 0)
+			self.Frame_7.Position = UDim2.new(0, 2,0, 5)
 			for i,v in pairs(self.mainTabs) do
 				v.Tab[5].Position = UDim2.new(0,0,0,0)
-				v.Tab[5].Size = UDim2.new(0, 375,0, 370)
+				v.Tab[5].Size = UDim2.new(0, 375,0, 365)
 			end
 			self.Tabs.Size = UDim2.new(0, 375,0, 45)
 			self.Tabs.Position =  UDim2.new(0.02,0,0.11, 0)
@@ -2907,7 +2926,13 @@ function Library:ColumnWindow()
 					scroll += 0.34
 				end
 			end
+			for i,v in pairs(self.mainTabs) do
+				if v.Tab[4].Image ~= "1" then
+					v.Tab[2].Position = UDim2.new(0.28, 0,0, -1)
+				end
+			end
 			self.ScrollingFrame.CanvasSize = UDim2.new(scroll,0,0,0)
+			self.ScrollingFrame.ScrollBarImageTransparency = 1
 			wait(1)
 			self.Tabs.Visible = true
 			self.Sections.Visible = true
@@ -2918,6 +2943,10 @@ function Library:ColumnWindow()
 			self.ImageLabel.ImageTransparency = self.Theme.BackGroundTran
 			self:Tween(self.ImageLabel, {Size = UDim2.new(0, 590,0, 480)}, 1)
 			self:Tween(self.Frame, {Size = UDim2.new(0, 568,0, 1)}, 1)
+			self:Tween(self.Header, {Size = UDim2.new(0, 568,0, 40)}, 1)
+			self:Tween(self.close, {Position = UDim2.new(0.95, 0,-28, 0)}, 1)
+			self:Tween(self.ImageButton, {Position = UDim2.new(0.88, 0,-26, 0)}, 1)
+			self:Tween(self.ImageButton_2, {Position = UDim2.new(0.81, 0,-21, 0)}, 1)
 			self.Tabs.Visible = false
 			self.Sections.Visible = false
 			self.Frame_2.Visible = true
@@ -2934,12 +2963,12 @@ function Library:ColumnWindow()
 			self.ScrollingFrame.Size = UDim2.new(0, 185,0, 415)
 			self.ScrollingFrame.Position =  UDim2.new(0, 0,-0.002, 0)
 			self.TextLabel_5.Visible = true
-			local pos = 0.009
+			local pos = 5
 			local scroll = 5
 			for i,v in pairs(self.mainTabs) do
-				v.Tab[1].Position = UDim2.new(0.03, 0,pos, 0)
+				v.Tab[1].Position = UDim2.new(0.03, 0, 0, pos)
 				v.Tab[1].Size = UDim2.new(0, 171,0, 35)
-				pos += 0.05
+				pos += 40
 				if i == 5 then
 					scroll += 0.16
 				end
@@ -2947,7 +2976,14 @@ function Library:ColumnWindow()
 					scroll += 0.23
 				end
 			end
-			self.ScrollingFrame.CanvasSize = UDim2.new(0,0,2,0)
+			for i,v in pairs(self.mainTabs) do
+				if v.Tab[4].Image ~= "1" then
+					v.Tab[2].Position = UDim2.new(0.21, 0,0, -1)
+				end
+			end
+			--self.ScrollingFrame.CanvasSize = UDim2.new(0,0,2,0)
+			--self:CalcScroll()
+			self.ScrollingFrame.CanvasSize = self.ScrollingFrameCanvasSize
 			wait(1)
 			self.Tabs.Visible = true
 			self.Sections.Visible = true
@@ -3312,41 +3348,33 @@ function Library:SearchAllTabs()
 		end
 	end)
 
-	-- Перемещаем элементы в текущую вкладку
 	local container = currentTab.Container
 	local yOffset = 5
-	local positionStep = 50 -- Стандартная высота элемента
+	local positionStep = 50
 
 	for i, result in ipairs(foundElements) do
 		local element = result.element
-
-		-- Сохраняем оригинальные свойства
 		self.OriginalTabElements[element] = {
 			Parent = element.Parent,
 			Position = element.Position,
 			Visible = element.Visible
 		}
 
-		-- Перемещаем элемент
 		element.Parent = container
 		element.Visible = true
 		element.Position = UDim2.new(0, 7, 0, yOffset)
 
-		-- Обновляем позицию для следующего элемента
 		yOffset = yOffset + positionStep
 
-		-- Сохраняем в текущих результатах
 		table.insert(self.CurrentSearchResults, element)
 	end
 
-	-- Обновляем размер контейнера
 	container.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
 end
 
 function Library:ClearSearchResults()
 	if not self.IsSearching then return end
 
-	-- Восстанавливаем элементы в исходные позиции
 	for _, element in ipairs(self.CurrentSearchResults) do
 		local original = self.OriginalTabElements[element]
 		if original then
@@ -3356,12 +3384,10 @@ function Library:ClearSearchResults()
 		end
 	end
 
-	-- Очищаем временные данные
 	self.OriginalTabElements = {}
 	self.CurrentSearchResults = {}
 	self.IsSearching = false
 
-	-- Восстанавливаем размер контейнера текущей вкладки
 	if self.CurrentTab then
 		self.CurrentTab:CalcScroll()
 	end
@@ -3590,7 +3616,7 @@ function Library:SetTheme(themeName)
 				BackGroundButtonTran = 0.9,
 				SectionsScrollingBarFrameColor = Color3.fromRGB(255, 255, 255),
 				DropDownColor = Color3.fromRGB(0, 0, 0),
-				DropDownFrameColor = Color3.fromRGB(0, 0, 0),
+				DropDownFrameColor = Color3.fromRGB(255, 255, 255),
 				SliderUnderLineColor = Color3.fromRGB(0, 0, 0),
 				Togglebtn = Color3.fromRGB(255, 255, 255),
 				Sliderball = Color3.fromRGB(255, 255, 255),
@@ -3729,8 +3755,12 @@ function Library:SetTheme(themeName)
 			v.Tab[4].Image = "rbxassetid://85882665968234"
 		elseif v.Tab[4].Image == "rbxassetid://85882665968234" and themeName ~= "White" then
 			v.Tab[4].Image = "rbxassetid://80456866422285"
+		elseif v.Tab[4].Image == "rbxassetid://88588775334975" and themeName == "White" then
+			v.Tab[4].Image = "rbxassetid://98686905743158"
+		elseif v.Tab[4].Image == "rbxassetid://98686905743158" and themeName ~= "White" then
+			v.Tab[4].Image = "rbxassetid://88588775334975"
 		end
-
+		
 		v.Tab[3].BackgroundColor3 = v.Theme.TextColor
 		v.Tab[5].ScrollBarImageColor3 = v.Theme.SectionsScrollingBarFrameColor
 		for i2,v2 in pairs(v.ElemBtn) do
